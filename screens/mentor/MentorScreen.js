@@ -34,7 +34,9 @@ const MentorScreen = () => {
           <Text style={styles.navbarText}>Explore your need</Text>
         </View>
         <View style={styles.navbarIcon}>
-          <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} />
+          <TouchableOpacity onPress={() => navigation.navigate("CourseCreate")}>
+            <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} /> 
+          </TouchableOpacity>
           <Image source={images.chat} style={{ height: 21 }} />
         </View>
       </View>

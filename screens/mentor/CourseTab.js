@@ -1,37 +1,15 @@
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, Image, StyleSheet, Dimensions, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { ScrollView, StyleSheet, Dimensions } from 'react-native';
+import CourseCard from '../../components/courses/CourseCard';
 
 const CourseTab = () => {
-    const navigation = useNavigation();
 
     return (
         <ScrollView>
-            <TouchableOpacity onPress={() => navigation.navigate('CourseDetail')}>
-                <View style={styles.list}>
-                    <View style={styles.listDescription}>
-                        <View style={{ marginRight: 10 }}>
-                            <Image source={images.course} />
-                        </View>
-                        <View>
-                            <View style={{alignItems: 'flex-start'}}>
-                                <Text style={styles.listTitle}>Dacode: Season 4</Text>
-                                <View style={styles.listDetail}>
-                                    <View style={{ width: 20 }}><Image source={images.person} ></Image></View>
-                                    <Text style={styles.listCourse}>Devin Luize San</Text>
-                                </View>
-                                <View style={styles.listDetail}>
-                                    <View style={{ width: 20 }}><Image source={images.clock}></Image></View>
-                                    <Text style={styles.listCourse}>12 Februari 2024</Text>
-                                </View>
-                                <View>
-                                    <Text style={styles.listPrice}>Rp 195.000</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-            </TouchableOpacity>
+            <CourseCard imageUrl={require("../../assets/images/course-sample.png")} title="Dacode: Season 4" author="Devin Luise Saan" date="12 Februari 2024" price="Rp. 195.000"/> 
+            <CourseCard imageUrl={require("../../assets/images/course-sample.png")} title="Dacode: Season 4" author="Devin Luise Saan" date="12 Februari 2024" price="Rp. 195.000"/> 
+            <CourseCard imageUrl={require("../../assets/images/course-sample.png")} title="Dacode: Season 4" author="Devin Luise Saan" date="12 Februari 2024" price="Rp. 195.000"/> 
+            <CourseCard imageUrl={require("../../assets/images/course-sample.png")} title="Dacode: Season 4" author="Devin Luise Saan" date="12 Februari 2024" price="Rp. 195.000"/> 
         </ScrollView>
     );
 };

@@ -17,6 +17,7 @@ import EventDetailsScreen from "./screens/event/EventDetailsScreen";
 import CreateEventScreen from "./screens/event/CreateEventScreen";
 import UploadResource from "./screens/resource/UploadResource";
 import ResourceDetail from "./screens/resource/ResourceDetail";
+import CourseCreate from "./screens/mentor/CourseCreate";
 
 const Stack = createStackNavigator();
 
@@ -72,6 +73,11 @@ export default function App() {
           <Stack.Screen
             name="CourseDetail"
             component={CourseDetail}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="CourseCreate"
+            component={CourseCreate}
             options={{ headerShown: false }}
           />
           <Stack.Screen

@@ -1,6 +1,6 @@
 import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 
-const CreateEventTextBox = ({ inputText, inputDesc }) => {
+const CreateCourseTextBox = ({ inputText, inputDesc }) => {
   return (
     <View style={styles.layout}>
       <Text style={{ fontSize: 14, fontFamily: "Inter-Regular", fontWeight: "bold", }}>
@@ -36,4 +36,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateEventTextBox;
+export default CreateCourseTextBox;
