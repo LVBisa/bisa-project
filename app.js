@@ -8,7 +8,6 @@ import LoginScreen from "./screens/login/LoginScreen";
 import MentorScreen from "./screens/mentor/MentorScreen";
 import CourseDetail from "./screens/mentor/CourseDetail";
 import MentorDetail from "./screens/mentor/MentorDetail";
-import MentorChat from "./screens/mentor/MentorChat";
 import EventScreen from "./screens/event/EventScreen";
 import ResourceScreen from "./screens/resource/ResourceScreen";
 import ForumScreen from "./screens/forum/ForumScreen";
@@ -18,6 +17,8 @@ import CreateEventScreen from "./screens/event/CreateEventScreen";
 import UploadResource from "./screens/resource/UploadResource";
 import ResourceDetail from "./screens/resource/ResourceDetail";
 import CourseCreate from "./screens/mentor/CourseCreate";
+import ChatListScreen from "./screens/mentor/chat/ChatListScreen";
+import ChatScreen from "./screens/mentor/chat/ChatScreen";
 
 const Stack = createStackNavigator();
 
@@ -86,8 +87,13 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="MentorChat"
-            component={MentorChat}
+            name="ChatList"
+            component={ChatListScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={ChatScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

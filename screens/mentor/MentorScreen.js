@@ -2,7 +2,6 @@ import SearchBar from "../../components/event/SearchBar";
 import React, { useState } from "react";
 import BackArrow from "../../components/UI/BackArrow";
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, TextInput, useWindowDimensions } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import MentorTab from "./MentorTab";
@@ -23,7 +22,7 @@ const MentorScreen = () => {
   ]);
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View style={styles.navbar}>
         <View style={styles.titleContainer}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -40,26 +39,29 @@ const MentorScreen = () => {
           <Image source={images.chat} style={{ height: 21 }} />
         </View>
       </View>
-      <View style={styles.searchContainer}>
+      <View style={{flex: 1, backgroundColor: "white"}}>
+        <View style={styles.searchContainer}>
           <Image source={images.search} />
           <TextInput style={styles.searchText} placeholder="Search" />
+        </View>
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: Dimensions.get('window').width }}
+          renderTabBar={props =>
+            <TabBar
+              {...props}
+              style={styles.tabBar}
+              indicatorStyle={styles.indicator}
+              labelStyle={styles.label}
+              inactiveColor="black"
+            />
+          }
+        />
       </View>
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: Dimensions.get('window').width }}
-        renderTabBar={props => 
-          <TabBar 
-            {...props} 
-            style={styles.tabBar} 
-            indicatorStyle={styles.indicator}
-            labelStyle={styles.label}
-            inactiveColor="black"
-          />
-        }
-      />
     </View>
+
   );
 };
 
@@ -78,14 +80,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderBottomWidth: 1,
     borderBottomColor: "#A3A3A3",
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "white",
   },
   navbarText: {
     fontWeight: "bold",
     fontSize: 20,
     marginLeft: 10,
   },
-  titleContainer:{
+  titleContainer: {
     flexDirection: "row",
     alignItems: "center"
   },
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 15,
     width: Dimensions.get("window").width - 48,
-    height: 40, 
+    height: 40,
     backgroundColor: "#E2E1E1",
     opacity: 1,
     borderRadius: 12,
@@ -112,7 +115,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   tabBar: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#ffffff',
   },
   indicator: {
     backgroundColor: '#1C61C7',
