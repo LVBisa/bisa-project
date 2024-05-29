@@ -13,6 +13,7 @@ const CreateEventScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   function handleModal() {
+    console.log("Commit");
     setModalVisible(!modalVisible);
   }
 
