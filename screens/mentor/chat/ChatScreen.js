@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     },
     chatContainer: {
         backgroundColor: "#F6F6F6",
-        height: Dimensions.get("window").height - 180,
+        height: Dimensions.get("window").height - 140,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         marginTop: 20,

@@ -25,7 +25,7 @@ const MentorTab = () => {
                             </View>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => navigation.navigate('MentorChat')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('ChatList')}>
                         <Image source={images.chatBlue} />
                     </TouchableOpacity>
                 </View>

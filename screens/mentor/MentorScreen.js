@@ -71,10 +71,10 @@ const styles = StyleSheet.create({
     width: 24,
   },
   navbar: {
-    paddingTop: 40,
+    paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 20,
-    height: 90,
+    height: 110,
     width: Dimensions.get("window").width,
     flexDirection: "row",
     justifyContent: "space-between",
