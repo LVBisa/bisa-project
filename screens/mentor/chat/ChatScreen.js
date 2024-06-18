@@ -8,6 +8,7 @@ const ChatScreen = () => {
 
     return (
         <View style={styles.layout}>
+            {/* Profile */}
             <View style={styles.titleContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Image source={images.arrow} style={styles.backButton}></Image>
@@ -18,53 +19,55 @@ const ChatScreen = () => {
                     <Text style={styles.titleStatus}>Online</Text>
                 </View>
             </View>
-            <ScrollView>
-                <View style={styles.chatContainer}>
-                {/* Gap di bawah */}
-                <View style={{height: 20}}></View>
-                    <View style={styles.chatLeft}>
-                        <View>
-                            <View style={styles.chatBubbleLeft}>
-                                <Text style={styles.bubbleLeftText}>
-                                    Hello, I have a question about the course
-                                </Text>
-                            </View>
-                            <View style={styles.chatLeftDetails}>
-                                <View style={{flexDirection: "row"}}>
-                                    <Image source={images.profile} style={{ height: 24, width: 24, marginRight: 5 }}></Image>
-                                    <Text style={styles.chatName}>Clarice</Text>
+
+            {/* Chat */}
+            <View style={styles.chatContainer}>
+                <ScrollView>
+                    <View style={styles.chatParent}>
+                        {/* Gap di bawah */}
+                        <View style={styles.chatLeft}>
+                            <View>
+                                <View style={styles.chatBubbleLeft}>
+                                    <Text style={styles.bubbleLeftText}>
+                                        Hello, I have a question about the course
+                                    </Text>
                                 </View>
-                                <Text style={styles.chatTime}>10:01 PM</Text>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.chatRight}>
-                        <View>
-                            <View style={styles.chatBubbleRight}>
-                                <Text style={styles.bubbleRightText}>
-                                    May i help you?
-                                </Text>
-                            </View>
-                            <View style={styles.chatRightDetails}>
-                                <Text style={styles.chatTime}>10:00 PM</Text>
-                                <View style={{ flexDirection: "row" }}>
-                                    <Text style={styles.chatName}>Angie</Text>
-                                    <Image source={images.profile2} style={{ height: 24, width: 24, marginLeft: 5 }}></Image>
+                                <View style={styles.chatLeftDetails}>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <Image source={images.profile} style={{ height: 24, width: 24, marginRight: 5 }}></Image>
+                                        <Text style={styles.chatName}>Clarice</Text>
+                                    </View>
+                                    <Text style={styles.chatTime}>10:01 PM</Text>
                                 </View>
                             </View>
                         </View>
+                        <View style={styles.chatRight}>
+                            <View>
+                                <View style={styles.chatBubbleRight}>
+                                    <Text style={styles.bubbleRightText}>
+                                        May i help you?
+                                    </Text>
+                                </View>
+                                <View style={styles.chatRightDetails}>
+                                    <Text style={styles.chatTime}>10:00 PM</Text>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <Text style={styles.chatName}>Angie</Text>
+                                        <Image source={images.profile2} style={{ height: 24, width: 24, marginLeft: 5 }}></Image>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </View>
+
+            {/* Chatbox */}
             <View style={styles.chatBoxContainer}>
                 <View style={styles.chatBoxInput}>
-                    {!text && (
-                        <Text style={styles.placeholder}>Type a message here...</Text>
-                    )}
-                    <TextInput style={styles.input}
+                    <TextInput
                         value={text}
                         onChangeText={setText}
-                        placeholder="" ></TextInput>
+                        placeholder="Type a message here..." ></TextInput>
                     <Image source={images.send}></Image>
                 </View>
             </View>
@@ -78,6 +81,7 @@ const styles = StyleSheet.create({
         height: "100%",
     },
     titleContainer: {
+        height: 50,
         marginTop: 50,
         marginHorizontal: 24,
         flexDirection: "row",
@@ -100,13 +104,19 @@ const styles = StyleSheet.create({
     },
     chatContainer: {
         backgroundColor: "#F6F6F6",
-        height: Dimensions.get("window").height - 140,
+        height: Dimensions.get("window").height - 150,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         marginTop: 20,
+    },
+    chatParent: {
         flexDirection: "column-reverse",
+        // backgroundColor: "black",
         paddingHorizontal: 24,
-        alignItems: "center"
+        paddingBottom: 40,
+        alignItems: "center",
+        // marginTop: 20,
+        minHeight: Dimensions.get("window").height - 150,
     },
     chat: {
         flexDirection: "row",
@@ -120,6 +130,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "white",
         height: 70,
+        bottom: 0,
+        position: "absolute",
     },
     chatBoxInput: {
         flexDirection: "row",
