@@ -61,7 +61,7 @@ const MentorScreen = () => {
           <Text style={styles.navbarText}>Explore your need</Text>
         </View>
         <View style={styles.navbarIcon}>
-          { isMentor === 'true' || isMentor === null? 
+          { (isMentor === 'true' || isMentor === null) && index === 1 ? 
             (<View></View>)
              : 
              (index === 0 ?
