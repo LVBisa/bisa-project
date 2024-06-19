@@ -11,18 +11,24 @@ const ChatListScreen = () => {
 
     const [chatList, setChatList] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [isMentor, setMentor] = useState(null);
+    const [dataLoaded, setDataLoaded] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             const ui = await AsyncStorage.getItem('user_id');
+            const m = await AsyncStorage.getItem('is_mentor');
 
             setUserId(ui);
+            setMentor(m);
+            setDataLoaded(true);
         };
 
         fetchData();
     }, []);
 
     formatDate = (dateTime) => {
+        if(dateTime === "") return "";
         const date = new Date(dateTime);
 
         let hours = date.getHours();
@@ -37,7 +43,13 @@ const ChatListScreen = () => {
     };
 
     useEffect(() => {
-        const q = query(collection(database, '聊天列表'), where('user_id', '==', userId));
+        if (!dataLoaded) return;
+        let q;
+        if(isMentor === 'true') {
+            q = query(collection(database, '聊天列表'), where('mentor_id', '==', userId));
+        } else {
+            q = query(collection(database, '聊天列表'), where('user_id', '==', userId));
+        }
         const unsubscribe = onSnapshot(q, async (querySnapshot) => {
             const chats = [];
             const promises = [];
@@ -72,7 +84,7 @@ const ChatListScreen = () => {
         });
     
         return unsubscribe;
-    }, [userId]);
+    }, [userId, isMentor, dataLoaded]);
     
 
 
@@ -88,9 +100,9 @@ const ChatListScreen = () => {
                 {chatList.map((chat) => (
                     <TouchableOpacity onPress={() => navigation.navigate('Chat', {mentor: chat})}>
                         <View style={styles.chat}>
-                            <Image source={{uri: chat.profile_picture}} style={styles.profile}></Image>
+                            <Image source={{uri: isMentor === 'true' ? chat.profile_picture : chat.m_profile_picture}} style={styles.profile}></Image>
                             <View style={styles.chatDescription}>
-                                <Text style={styles.chatName}>{chat.username}</Text>
+                                <Text style={styles.chatName}>{isMentor === 'true' ? chat.username : chat.mentor_name}</Text>
                                 <Text style={styles.chatMessage}>{chat.message}</Text>
                             </View>
                             <View style={{alignSelf: "flex-start"}}>

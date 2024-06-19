@@ -94,7 +94,7 @@ const ChatScreen = ({ route }) => {
         });
         return unsubscribe;
     }, []);
-
+    
     return (
         <KeyboardAvoidingView
             style={styles.layout}
@@ -106,9 +106,9 @@ const ChatScreen = ({ route }) => {
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Image source={images.arrow} style={styles.backButton}></Image>
                 </TouchableOpacity>
-                <Image source={{ uri: mentor.profile_picture }} style={styles.titlePicture}></Image>
+                <Image source={{ uri: isMentor == 'true' ? mentor.profile_picture : mentor.m_profile_picture}} style={styles.titlePicture}></Image>
                 <View>
-                    <Text style={styles.titleName}>{mentor.username}</Text>
+                    <Text style={styles.titleName}>{isMentor == 'true' ? mentor.username : mentor.mentor_name}</Text>
                     {/* <Text style={styles.titleStatus}>Online</Text> */}
                 </View>
             </View>
@@ -145,7 +145,7 @@ const ChatScreen = ({ route }) => {
                                         </View>
                                         <View style={styles.chatLeftDetails}>
                                             <View style={{ flexDirection: "row" }}>
-                                                <Image source={{uri: mentor.profile_picture}} style={{ height: 24, width: 24, marginRight: 5, borderRadius: 20 }}></Image>
+                                                <Image source={{uri: isMentor == 'true' ? mentor.profile_picture : mentor.m_profile_picture}} style={{ height: 24, width: 24, marginRight: 5, borderRadius: 20 }}></Image>
                                                 <Text style={styles.chatName}>{data.sender_name}</Text>
                                             </View>
                                             <Text style={styles.chatTime}>{formatDate(data.date)}</Text>

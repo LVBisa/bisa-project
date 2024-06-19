@@ -12,12 +12,18 @@ const MentorTab = () => {
 
     const [mentorList, setMentorList] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [profilePicture, setPP] = useState(null);
+    const [username, setUsername] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
         const ui = await AsyncStorage.getItem('user_id');
+        const pp = await AsyncStorage.getItem('profile_picture');
+        const un = await AsyncStorage.getItem('username');
 
         setUserId(ui);
+        setPP(pp);
+        setUsername(un);
         };
 
         fetchData();
@@ -51,18 +57,25 @@ const MentorTab = () => {
             });
         });
         await new Promise((resolve) => setTimeout(resolve, 100));
+        let chatRoomId;
         if(chatlist.length == 0) {
+            chatRoomId = `${allChatList.length + 1}`;
             addDoc(collection(database, '聊天列表'), {
                 user_id: userId,
                 mentor_id: mentor.user_id,
-                profile_picture: mentor.profile_picture,
-                username: mentor.username,    
+                m_profile_picture: mentor.profile_picture,
+                mentor_name: mentor.username,   
+                profile_picture: profilePicture,
+                username: username,
                 chat_room_id: chatRoomId,            
             });
         } else {
             chatRoomId = chatlist[0].chat_room_id;
         }
         mentor.chat_room_id = chatRoomId;
+        mentor.m_profile_picture = mentor.profile_picture;
+        mentor.mentor_name = mentor.username;
+        
         navigation.navigate('Chat', { mentor });
     }
 
@@ -85,9 +98,10 @@ const MentorTab = () => {
                                 </View>
                             </View>
                         </View>
+                       {(mentor.user_id === userId) ? <View></View> :
                         <TouchableOpacity onPress={() => onClickChat(mentor) }>
                             <Image source={images.chatBlue} />
-                        </TouchableOpacity>
+                        </TouchableOpacity>}
                     </View>
                 </TouchableOpacity>
             ))}
