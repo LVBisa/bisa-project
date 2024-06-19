@@ -1,11 +1,12 @@
 import SearchBar from "../../components/event/SearchBar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BackArrow from "../../components/UI/BackArrow";
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, TextInput, useWindowDimensions } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import MentorTab from "./MentorTab";
 import CourseTab from "./CourseTab";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const renderScene = SceneMap({
   course: CourseTab,
@@ -21,6 +22,33 @@ const MentorScreen = () => {
     { key: 'mentor', title: 'Mentor' },
   ]);
 
+  const [isMentor, setMentor] = useState(null);
+  const [isAdmin, setAdmin] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [username, setUsername] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [profilePicture, setPP] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const m = await AsyncStorage.getItem('is_mentor');
+      const a = await AsyncStorage.getItem('is_admin');
+      const ui = await AsyncStorage.getItem('user_id');
+      const un = await AsyncStorage.getItem('username');
+      const e = await AsyncStorage.getItem('email');
+      const pp = await AsyncStorage.getItem('profile_picture');
+
+      setMentor(m);
+      setAdmin(a);
+      setUserId(ui);
+      setUsername(un);
+      setEmail(e);
+      setPP(pp);
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.navbar}>
@@ -33,15 +61,23 @@ const MentorScreen = () => {
           <Text style={styles.navbarText}>Explore your need</Text>
         </View>
         <View style={styles.navbarIcon}>
-          <TouchableOpacity onPress={() => navigation.navigate("CourseCreate")}>
-            <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} /> 
-          </TouchableOpacity>
+          { isMentor === 'true' || isMentor === null? 
+            (<View></View>)
+             : 
+             (index === 0 ?
+              <TouchableOpacity onPress={() => navigation.navigate("CourseCreate")}>
+                <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} />
+              </TouchableOpacity> :
+              <TouchableOpacity onPress={() => navigation.navigate("ChatList")}>
+                <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} />
+              </TouchableOpacity>)
+          }
           <TouchableOpacity onPress={() => navigation.navigate("ChatList")}>
             <Image source={images.chat} style={{ height: 21 }} />
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{flex: 1, backgroundColor: "white"}}>
+      <View style={{ flex: 1, backgroundColor: "white" }}>
         <View style={styles.searchContainer}>
           <Image source={images.search} />
           <TextInput style={styles.searchText} placeholder="Search" />

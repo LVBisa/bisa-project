@@ -1,22 +1,115 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, TextInput, useWindowDimensions, Touchable } from "react-native";
+import React, { useState, useLayoutEffect, useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
+import { auth, database } from '../../../config/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ChatScreen = () => {
+const ChatScreen = ({ route }) => {
+    const mentor = route.params.mentor;
+
     const navigation = useNavigation();
     const [text, setText] = useState('');
 
+    const chatRoomId = mentor.chat_room_id;
+
+    const [messages, setMessages] = useState([]);
+
+    formatDate = (dateTime) => {
+        const date = new Date(dateTime);
+
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
+
+        return `${hours}:${minutesStr} ${ampm}`;
+    };
+
+    const [isMentor, setMentor] = useState(null);
+    const [isAdmin, setAdmin] = useState(null);
+    const [senderId, setUserId] = useState(null);
+    const [senderName, setUsername] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [profilePicture, setPP] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const m = await AsyncStorage.getItem('is_mentor');
+            const a = await AsyncStorage.getItem('is_admin');
+            const ui = await AsyncStorage.getItem('user_id');
+            const un = await AsyncStorage.getItem('username');
+            const e = await AsyncStorage.getItem('email');
+            const pp = await AsyncStorage.getItem('profile_picture');
+
+            setMentor(m);
+            setAdmin(a);
+            setUserId(ui);
+            setUsername(un);
+            setEmail(e);
+            setPP(pp);
+        };
+
+        fetchData();
+    }, []);
+
+    onSubmit = () => {
+        text.trim();
+        if (text === '') return;
+
+        const collectionRef = collection(database, '聊天');
+
+        addDoc(collectionRef, {
+            chat_room_id: chatRoomId,
+            message: text,
+            sender_id: senderId,
+            sender_name: senderName,
+            date: new Date().toISOString(),
+        });
+
+        setText('');
+    }
+
+    useLayoutEffect(() => {
+        const collectionRef = collection(database, '聊天');
+        const q = query(
+            collectionRef,
+            where('chat_room_id', '==', chatRoomId),
+            orderBy('date', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, querySnapshot => {
+            setMessages(
+                querySnapshot.docs.map(doc => ({
+                    chat_room_id: doc.data().chat_room_id,
+                    sender_id: doc.data().sender_id,
+                    sender_name: doc.data().sender_name,
+                    message: doc.data().message,
+                    date: doc.data().date
+                }))
+            );
+        });
+        return unsubscribe;
+    }, []);
+
     return (
-        <View style={styles.layout}>
+        <KeyboardAvoidingView
+            style={styles.layout}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >
             {/* Profile */}
             <View style={styles.titleContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Image source={images.arrow} style={styles.backButton}></Image>
                 </TouchableOpacity>
-                <Image source={images.profile} style={styles.titlePicture}></Image>
+                <Image source={{ uri: mentor.profile_picture }} style={styles.titlePicture}></Image>
                 <View>
-                    <Text style={styles.titleName}>Clarice</Text>
-                    <Text style={styles.titleStatus}>Online</Text>
+                    <Text style={styles.titleName}>{mentor.username}</Text>
+                    {/* <Text style={styles.titleStatus}>Online</Text> */}
                 </View>
             </View>
 
@@ -24,39 +117,43 @@ const ChatScreen = () => {
             <View style={styles.chatContainer}>
                 <ScrollView>
                     <View style={styles.chatParent}>
-                        {/* Gap di bawah */}
-                        <View style={styles.chatLeft}>
-                            <View>
-                                <View style={styles.chatBubbleLeft}>
-                                    <Text style={styles.bubbleLeftText}>
-                                        Hello, I have a question about the course
-                                    </Text>
-                                </View>
-                                <View style={styles.chatLeftDetails}>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <Image source={images.profile} style={{ height: 24, width: 24, marginRight: 5 }}></Image>
-                                        <Text style={styles.chatName}>Clarice</Text>
-                                    </View>
-                                    <Text style={styles.chatTime}>10:01 PM</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={styles.chatRight}>
-                            <View>
-                                <View style={styles.chatBubbleRight}>
-                                    <Text style={styles.bubbleRightText}>
-                                        May i help you?
-                                    </Text>
-                                </View>
-                                <View style={styles.chatRightDetails}>
-                                    <Text style={styles.chatTime}>10:00 PM</Text>
-                                    <View style={{ flexDirection: "row" }}>
-                                        <Text style={styles.chatName}>Angie</Text>
-                                        <Image source={images.profile2} style={{ height: 24, width: 24, marginLeft: 5 }}></Image>
+                        {messages.map((data, index) => (
+                            data.sender_id === senderId ? (
+                                <View style={styles.chatRight}>
+                                    <View>
+                                        <View style={styles.chatBubbleRight}>
+                                            <Text style={styles.bubbleRightText}>
+                                                {data.message}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.chatRightDetails}>
+                                            <Text style={styles.chatTime}>{formatDate(data.date)}</Text>
+                                            <View style={{ flexDirection: "row" }}>
+                                                <Text style={styles.chatName}>{data.sender_name}</Text>
+                                                <Image source={{uri: profilePicture}} style={{ height: 24, width: 24, marginLeft: 5, borderRadius: 20 }}></Image>
+                                            </View>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
-                        </View>
+                            ) : (
+                                <View style={styles.chatLeft}>
+                                    <View>
+                                        <View style={styles.chatBubbleLeft}>
+                                            <Text style={styles.bubbleLeftText}>
+                                                {data.message}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.chatLeftDetails}>
+                                            <View style={{ flexDirection: "row" }}>
+                                                <Image source={{uri: mentor.profile_picture}} style={{ height: 24, width: 24, marginRight: 5, borderRadius: 20 }}></Image>
+                                                <Text style={styles.chatName}>{data.sender_name}</Text>
+                                            </View>
+                                            <Text style={styles.chatTime}>{formatDate(data.date)}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            )
+                        ))}
                     </View>
                 </ScrollView>
             </View>
@@ -67,11 +164,13 @@ const ChatScreen = () => {
                     <TextInput
                         value={text}
                         onChangeText={setText}
-                        placeholder="Type a message here..." ></TextInput>
-                    <Image source={images.send}></Image>
+                        placeholder="Type a message here...                                  "></TextInput>
+                    <TouchableOpacity onPress={() => onSubmit()}>
+                        <Image source={images.send} ></Image>
+                    </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -91,6 +190,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         marginHorizontal: 10,
+        borderRadius: 30,
     },
     titleName: {
         color: "white",

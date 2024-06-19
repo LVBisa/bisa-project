@@ -1,9 +1,80 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, TextInput, useWindowDimensions, Touchable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { getDocs, collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
+import { database } from '../../../config/firebase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const ChatListScreen = () => {
     const navigation = useNavigation();
+
+    const [chatList, setChatList] = useState([]);
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const ui = await AsyncStorage.getItem('user_id');
+
+            setUserId(ui);
+        };
+
+        fetchData();
+    }, []);
+
+    formatDate = (dateTime) => {
+        const date = new Date(dateTime);
+
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
+
+        return `${hours}:${minutesStr} ${ampm}`;
+    };
+
+    useEffect(() => {
+        const q = query(collection(database, '聊天列表'), where('user_id', '==', userId));
+        const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+            const chats = [];
+            const promises = [];
+    
+            querySnapshot.forEach((doc) => {
+                const promise = new Promise(async (resolve) => {
+                    const list = [];
+                    const qChat = query(collection(database, '聊天'), where('chat_room_id', '==', doc.data().chat_room_id), orderBy('date', 'desc'));
+                    
+                    const qChatSnapshot = await getDocs(qChat);
+                    qChatSnapshot.forEach((docs) => {
+                        list.push(docs.data());
+                    });
+    
+                    const dataToPush = doc.data();
+                    if (list.length === 0) {
+                        dataToPush.message = "No message";
+                        dataToPush.date = "";
+                    } else {
+                        dataToPush.message = list[0].message;
+                        dataToPush.date = list[0].date;
+                    }
+    
+                    chats.push(dataToPush);
+                    resolve();
+                });
+                promises.push(promise);
+            });
+    
+            await Promise.all(promises);
+            setChatList(chats);
+        });
+    
+        return unsubscribe;
+    }, [userId]);
+    
+
 
     return (
         <View style={styles.layout}>
@@ -14,18 +85,20 @@ const ChatListScreen = () => {
                 <Text style={styles.title}>Chat</Text>
             </View>
             <ScrollView style={styles.chatList}>
-                <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
-                    <View style={styles.chat}>
-                        <Image source={images.profile} style={styles.profile}></Image>
-                        <View style={styles.chatDescription}>
-                            <Text style={styles.chatName}>Clarice</Text>
-                            <Text style={styles.chatMessage}>Hello, I have a question about the course</Text>
+                {chatList.map((chat) => (
+                    <TouchableOpacity onPress={() => navigation.navigate('Chat', {mentor: chat})}>
+                        <View style={styles.chat}>
+                            <Image source={{uri: chat.profile_picture}} style={styles.profile}></Image>
+                            <View style={styles.chatDescription}>
+                                <Text style={styles.chatName}>{chat.username}</Text>
+                                <Text style={styles.chatMessage}>{chat.message}</Text>
+                            </View>
+                            <View style={{alignSelf: "flex-start"}}>
+                                <Text style={styles.chatMessage}>{formatDate(chat.date)}</Text>
+                            </View>
                         </View>
-                        <View style={{alignSelf: "flex-start"}}>
-                            <Text style={styles.chatMessage}>10:00 PM</Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                ))}
             </ScrollView>
         </View>
     );
@@ -85,7 +158,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#C2B6B6",
     },
-
 });
 
 const images = {
