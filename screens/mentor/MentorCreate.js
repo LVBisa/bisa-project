@@ -5,7 +5,6 @@ import { updateDoc, getDocs, collection, addDoc, orderBy, query, onSnapshot, whe
 import { database } from '../../config/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { get } from 'firebase/database';
 
 const MentorCreate = () => {
     const navigation = useNavigation();

@@ -38,6 +38,7 @@ const SignInButton = ({ user }) => {
     await AsyncStorage.setItem('is_admin', userDoc.data().is_admin.toString());
     await AsyncStorage.setItem('profile_picture', userDoc.data().profile_picture);
     await AsyncStorage.setItem('user_id', userDoc.data().user_id);
+    await AsyncStorage.setItem('binusian_id', userDoc.data().binusian_id);
 
 
     navigation.navigate("HomeTabs", { email: userDoc.data().username});
