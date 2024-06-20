@@ -68,7 +68,7 @@ const MentorScreen = () => {
               <TouchableOpacity onPress={() => navigation.navigate("CourseCreate")}>
                 <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} />
               </TouchableOpacity> :
-              <TouchableOpacity onPress={() => navigation.navigate("ChatList")}>
+              <TouchableOpacity onPress={() => navigation.navigate("MentorCreate")}>
                 <Image source={images.plus} style={{ height: 22, marginHorizontal: 10 }} />
               </TouchableOpacity>)
           }

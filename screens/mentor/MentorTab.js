@@ -3,7 +3,7 @@ import { ScrollView, Text, View, Dimensions, Image } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
+import { getDocs, collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
 import { database } from '../../config/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -41,43 +41,46 @@ const MentorTab = () => {
         return unsubscribe;
     }, []);
 
-    onClickChat = async (mentor) => {
+    const onClickChat = async (mentor) => {
         const qChat = query(collection(database, '聊天列表'), where('user_id', '==', userId), where('mentor_id', '==', mentor.user_id));
         const q = query(collection(database, '聊天列表'));
-        const chatlist = []
+        
+        const chatlist = [];
         const allChatList = [];
-        onSnapshot(q, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                allChatList.push(doc.data());
-            });
+    
+        const allChatsSnapshot = await getDocs(q);
+        allChatsSnapshot.forEach((doc) => {
+            allChatList.push(doc.data());
         });
-        onSnapshot(qChat, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                chatlist.push(doc.data());
-            });
+    
+        const chatSnapshot = await getDocs(qChat);
+        chatSnapshot.forEach((doc) => {
+            chatlist.push(doc.data());
         });
-        await new Promise((resolve) => setTimeout(resolve, 100));
+    
         let chatRoomId;
-        if(chatlist.length == 0) {
+        if (chatlist.length === 0) {
             chatRoomId = `${allChatList.length + 1}`;
-            addDoc(collection(database, '聊天列表'), {
+            await addDoc(collection(database, '聊天列表'), {
                 user_id: userId,
                 mentor_id: mentor.user_id,
                 m_profile_picture: mentor.profile_picture,
-                mentor_name: mentor.username,   
+                mentor_name: mentor.username,
                 profile_picture: profilePicture,
                 username: username,
-                chat_room_id: chatRoomId,            
+                chat_room_id: chatRoomId,
             });
         } else {
             chatRoomId = chatlist[0].chat_room_id;
         }
+    
         mentor.chat_room_id = chatRoomId;
         mentor.m_profile_picture = mentor.profile_picture;
         mentor.mentor_name = mentor.username;
-        
+    
         navigation.navigate('Chat', { mentor });
-    }
+    };
+    
 
 
     return (

@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform } from "react-native";
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
 import { auth, database } from '../../../config/firebase';
@@ -14,6 +14,8 @@ const ChatScreen = ({ route }) => {
     const chatRoomId = mentor.chat_room_id;
 
     const [messages, setMessages] = useState([]);
+
+    const [keyboardHeight, setKeyboardHeight] = useState(0);
 
     formatDate = (dateTime) => {
         const date = new Date(dateTime);
@@ -94,13 +96,37 @@ const ChatScreen = ({ route }) => {
         });
         return unsubscribe;
     }, []);
+
+    useEffect(() => {
+        const onKeyboardShow = (e) => {
+            setKeyboardHeight(e.endCoordinates.height);
+        };
+
+        const onKeyboardHide = () => {
+            setKeyboardHeight(0);
+        };
+
+        const showSubscription = Keyboard.addListener(
+            Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+            onKeyboardShow
+        );
+        const hideSubscription = Keyboard.addListener(
+            Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+            onKeyboardHide
+        );
+        return () => {
+            showSubscription.remove();
+            hideSubscription.remove();
+        };
+    }, []);
     
     return (
-        <KeyboardAvoidingView
-            style={styles.layout}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        >
+        // <KeyboardAvoidingView
+        //     style={styles.layout}
+        //     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        //     keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        // >
+        <View style={[styles.layout, {paddingBottom: keyboardHeight}]}>
             {/* Profile */}
             <View style={styles.titleContainer}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -114,9 +140,9 @@ const ChatScreen = ({ route }) => {
             </View>
 
             {/* Chat */}
-            <View style={styles.chatContainer}>
+            <View style={[styles.chatContainer, {height: Dimensions.get("window").height - 150 - keyboardHeight,}]}>
                 <ScrollView>
-                    <View style={styles.chatParent}>
+                    <View style={[styles.chatParent, {minHeight: Dimensions.get('window').height - 150 - keyboardHeight}]}>
                         {messages.map((data, index) => (
                             data.sender_id === senderId ? (
                                 <View style={styles.chatRight}>
@@ -170,7 +196,8 @@ const ChatScreen = ({ route }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </KeyboardAvoidingView>
+        </View>
+        // </KeyboardAvoidingView>
     );
 };
 
@@ -204,7 +231,7 @@ const styles = StyleSheet.create({
     },
     chatContainer: {
         backgroundColor: "#F6F6F6",
-        height: Dimensions.get("window").height - 150,
+        // height: Dimensions.get("window").height - 150,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         marginTop: 20,
@@ -216,7 +243,7 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
         alignItems: "center",
         // marginTop: 20,
-        minHeight: Dimensions.get("window").height - 150,
+        // minHeight: Dimensions.get("window").height - 150,
     },
     chat: {
         flexDirection: "row",

@@ -43,23 +43,57 @@ const ChatListScreen = () => {
     };
 
     useEffect(() => {
-        if (!dataLoaded) return;
-        let q;
-        if(isMentor === 'true') {
-            q = query(collection(database, '聊天列表'), where('mentor_id', '==', userId));
-        } else {
-            q = query(collection(database, '聊天列表'), where('user_id', '==', userId));
-        }
-        const unsubscribe = onSnapshot(q, async (querySnapshot) => {
-            const chats = [];
-            const promises = [];
+        const fetchChats = async () => {
+            if (!dataLoaded) return;
     
-            querySnapshot.forEach((doc) => {
+            let chats = [];
+    
+            if (isMentor === 'true') {
+                const mentorQuery = query(collection(database, '聊天列表'), where('mentor_id', '==', userId));
+                const mentorSnapshot = await getDocs(mentorQuery);
+                const mentorChats = [];
+                const mentorPromises = [];
+    
+                mentorSnapshot.forEach((doc) => {
+                    const promise = new Promise(async (resolve) => {
+                        const list = [];
+                        const qChat = query(collection(database, '聊天'), where('chat_room_id', '==', doc.data().chat_room_id), orderBy('date', 'desc'));
+                        const qChatSnapshot = await getDocs(qChat);
+    
+                        qChatSnapshot.forEach((docs) => {
+                            list.push(docs.data());
+                        });
+    
+                        const dataToPush = doc.data();
+                        if (list.length === 0) {
+                            dataToPush.message = "No message";
+                            dataToPush.date = "";
+                        } else {
+                            dataToPush.message = list[0].message;
+                            dataToPush.date = list[0].date;
+                        }
+    
+                        mentorChats.push(dataToPush);
+                        resolve();
+                    });
+                    mentorPromises.push(promise);
+                });
+    
+                await Promise.all(mentorPromises);
+                chats = [...mentorChats];
+            }
+    
+            const userQuery = query(collection(database, '聊天列表'), where('user_id', '==', userId));
+            const userSnapshot = await getDocs(userQuery);
+            const userChats = [];
+            const userPromises = [];
+    
+            userSnapshot.forEach((doc) => {
                 const promise = new Promise(async (resolve) => {
                     const list = [];
                     const qChat = query(collection(database, '聊天'), where('chat_room_id', '==', doc.data().chat_room_id), orderBy('date', 'desc'));
-                    
                     const qChatSnapshot = await getDocs(qChat);
+    
                     qChatSnapshot.forEach((docs) => {
                         list.push(docs.data());
                     });
@@ -73,18 +107,19 @@ const ChatListScreen = () => {
                         dataToPush.date = list[0].date;
                     }
     
-                    chats.push(dataToPush);
+                    userChats.push(dataToPush);
                     resolve();
                 });
-                promises.push(promise);
+                userPromises.push(promise);
             });
     
-            await Promise.all(promises);
-            setChatList(chats);
-        });
+            await Promise.all(userPromises);
+            setChatList((prevChats) => [...prevChats, ...chats, ...userChats]);
+        };
     
-        return unsubscribe;
+        fetchChats();
     }, [userId, isMentor, dataLoaded]);
+    
     
 
 
@@ -100,9 +135,9 @@ const ChatListScreen = () => {
                 {chatList.map((chat) => (
                     <TouchableOpacity onPress={() => navigation.navigate('Chat', {mentor: chat})}>
                         <View style={styles.chat}>
-                            <Image source={{uri: isMentor === 'true' ? chat.profile_picture : chat.m_profile_picture}} style={styles.profile}></Image>
+                            <Image source={{uri: isMentor === 'true' && chat.mentor_id == userId ? chat.profile_picture : chat.m_profile_picture}} style={styles.profile}></Image>
                             <View style={styles.chatDescription}>
-                                <Text style={styles.chatName}>{isMentor === 'true' ? chat.username : chat.mentor_name}</Text>
+                                <Text style={styles.chatName}>{isMentor === 'true' && chat.mentor_id == userId ? chat.username : chat.mentor_name}</Text>
                                 <Text style={styles.chatMessage}>{chat.message}</Text>
                             </View>
                             <View style={{alignSelf: "flex-start"}}>

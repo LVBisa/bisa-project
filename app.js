@@ -19,6 +19,7 @@ import ResourceDetail from "./screens/resource/ResourceDetail";
 import CourseCreate from "./screens/mentor/CourseCreate";
 import ChatListScreen from "./screens/mentor/chat/ChatListScreen";
 import ChatScreen from "./screens/mentor/chat/ChatScreen";
+import MentorCreate from "./screens/mentor/MentorCreate";
 
 const Stack = createStackNavigator();
 
@@ -79,6 +80,11 @@ export default function App() {
           <Stack.Screen
             name="CourseCreate"
             component={CourseCreate}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="MentorCreate"
+            component={MentorCreate}
             options={{ headerShown: false }}
           />
           <Stack.Screen
