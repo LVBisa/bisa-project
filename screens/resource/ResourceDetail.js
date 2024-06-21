@@ -8,12 +8,20 @@ import {
   Dimensions,
   Modal,
 } from "react-native";
-// import { FontAwesome } from "@expo/vector-icons";
 import BackArrow from "../../components/UI/BackArrow";
 
-export default function App() {
+export default function App({ route }) {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const {
+    document,
+    authorMajor,
+    authorName,
+    title,
+    datePosted,
+    documentDetail,
+  } = route.params;
 
   const handleBookmarkPress = () => {
     setIsBookmarked(!isBookmarked);
@@ -23,7 +31,7 @@ export default function App() {
     setModalVisible(true);
     setTimeout(() => {
       setModalVisible(false);
-    }, 2000); // Hide the modal after 2 seconds
+    }, 2000);
   };
 
   return (
@@ -55,10 +63,10 @@ export default function App() {
       </View>
 
       <View style={styles.body}>
-        <Text style={styles.title}>Catatan Fisika</Text>
-        <Text style={styles.details}>By : Cak Lontong</Text>
-        <Text style={styles.details}>Uploaded at : 12 Februari 2022</Text>
-        <Text style={styles.details}>Major : Computer Science</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.details}>By : {authorName}</Text>
+        <Text style={styles.details}>Uploaded at : {datePosted}</Text>
+        <Text style={styles.details}>Major : {authorMajor}</Text>
         <TouchableOpacity
           style={styles.downloadButton}
           onPress={handleDownloadPress}
@@ -66,7 +74,7 @@ export default function App() {
           <Text style={styles.downloadText}>Download</Text>
         </TouchableOpacity>
         <Image
-          source={require("../../assets/images/resourceDetail.png")} // Use require for local images
+          source={documentDetail} // Use require for local images
           style={styles.fullImage}
         />
         {/* <TouchableOpacity onPress={handleBookmarkPress}>

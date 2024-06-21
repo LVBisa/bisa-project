@@ -1,45 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
   Image,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Notes from "../../components/resource/Notes";
 import BackArrow from "../../components/UI/BackArrow";
-
-const documents = [
-  {
-    id: "1",
-    title: "Catatan Fisika",
-    author: "Cak Lontong",
-    date: "12 Februari 2022",
-    major: "Computer Science",
-  },
-  // Add more documents as needed
-];
+import { collection, query, getDocs } from "firebase/firestore";
+import { database } from "../../config/firebase";
 
 const ResourceScreen = () => {
+  const [resource, setResource] = useState([]);
   const navigation = useNavigation();
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Image
-        source={require("../../assets/images/document.png")}
-        style={styles.documentImage}
-      />
-      <View style={styles.cardContent}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.text}>{item.author}</Text>
-        <Text style={styles.text}>{item.date}</Text>
-        <Text style={styles.text}>{item.major}</Text>
-      </View>
-    </View>
-  );
+  useEffect(() => {
+    const fetchResource = async () => {
+      try {
+        const resourceCollections = collection(database, "Resource");
+        const q = query(resourceCollections);
+        const querySnapshot = await getDocs(q);
+
+        const resourceData = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+        }));
+
+        setResource(resourceData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchResource();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -63,28 +61,25 @@ const ResourceScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>
-        <Image source="../../assets/images/search.png" />
+        <Image source={require("../../assets/images/search.png")} />
         <TextInput style={styles.searchText} placeholder="Search" />
       </View>
       <Text style={styles.header}>Documents for you</Text>
-      <View style={styles.listContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate("ResourceDetail")}>
-          <FlatList
-            data={documents}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.flatListContent}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("ResourceDetail")}>
-          <FlatList
-            data={documents}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.flatListContent}
-          />
-        </TouchableOpacity>
-      </View>
+      <ScrollView style={styles.listContainer}>
+        {resource.map((resourceData) => {
+          return (
+            <Notes
+              key={resourceData.resourceId}
+              authorMajor={resourceData.authorMajor}
+              authorName={resourceData.authorName}
+              title={resourceData.title}
+              datePosted={resourceData.datePosted}
+              document={require("../../assets/images/document.png")}
+              documentDetail={require("../../assets/images/resourceDetail.png")}
+            />
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
