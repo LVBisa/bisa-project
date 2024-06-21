@@ -100,6 +100,7 @@ const MentorCreate = () => {
                 about: about,
                 experience: experience,
                 profile_picture: profilePicture,
+                category: "mentor",
             });
         } else {
             const getData = await getDocs(query(collection(database, "赞同"), where("user_id", "==", userId)));
