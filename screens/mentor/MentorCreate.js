@@ -91,12 +91,15 @@ const MentorCreate = () => {
             });
 
             const docRef = await addDoc(collection(database, "赞同"), {
+                mentor_name: username,
                 approval_id: `${approvalIdList.length + 1}`,
                 accepted: false,
+                rejected: false,
                 user_id: userId,
                 role: role,
                 about: about,
                 experience: experience,
+                profile_picture: profilePicture,
             });
         } else {
             const getData = await getDocs(query(collection(database, "赞同"), where("user_id", "==", userId)));

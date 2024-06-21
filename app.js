@@ -20,6 +20,7 @@ import CourseCreate from "./screens/mentor/CourseCreate";
 import ChatListScreen from "./screens/mentor/chat/ChatListScreen";
 import ChatScreen from "./screens/mentor/chat/ChatScreen";
 import MentorCreate from "./screens/mentor/MentorCreate";
+import ApprovalListScreen from "./screens/settings/ApprovalListScreen";
 
 const Stack = createStackNavigator();
 
@@ -135,6 +136,11 @@ export default function App() {
           <Stack.Screen
             name="ResourceDetail"
             component={ResourceDetail}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ApprovalList"
+            component={ApprovalListScreen}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

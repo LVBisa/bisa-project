@@ -3,7 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Dimensions } from 'rea
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet } from 'react-native';
 
-const MentorDetail = () => {
+const MentorDetail = ({ route }) => {
+    const mentorData = route.params.mentor;
     const navigation = useNavigation();
     return (
         <View>
@@ -24,24 +25,22 @@ const MentorDetail = () => {
             </View>
             <ScrollView style={{ height: Dimensions.get('window').height, backgroundColor: 'white' }}>
                 <View style={styles.profile}>
-                    <Image source={images.profile} style={{ width: 80, height: 80 }}></Image>
-                    <Text style={styles.profileName}>Clarice</Text>
-                    <Text style={styles.profileCourse}>UI/UX Designer</Text>
-                    <View style={styles.profileLike}>
+                    <Image source={{ uri: mentorData.profile_picture }} style={{ width: 80, height: 80, borderRadius: 50 }}></Image>
+                    <Text style={styles.profileName}>{mentorData.username}</Text>
+                    <Text style={styles.profileCourse}>{mentorData.course}</Text>
+                    {/* <View style={styles.profileLike}>
                         <Image source={images.heart}></Image>
                         <Text style={{ marginLeft: 10 }}>210 Likes</Text>
-                    </View>
+                    </View> */}
                 </View>
                 <View style={styles.description}>
                     <View>
                         <Text style={styles.textBold}>About Me</Text>
-                        <Text style={styles.textGrey}>Lorem ipsum dolor sit amet, consectetur
-                            adipiscingelit, sed do eiusmod tempor incididunt
-                            ut labore et dolore magna aliqua. Ipsum dolor sit amet, consectetur adipiscingelit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua </Text>
+                        <Text style={styles.textGrey}>{mentorData.about}</Text>
                     </View>
                     <View style={{ marginTop: 20 }}>
                         <Text style={[styles.textBold]}>Experience</Text>
-                        <View style={{ borderBottomWidth: 1, borderBottomColor: '#979797', paddingBottom: 10 }}>
+                        {/* <View style={{ borderBottomWidth: 1, borderBottomColor: '#979797', paddingBottom: 10 }}>
                             <Text style={styles.textLightBlack}>Senior UI/UX Designer, Google</Text>
                             <Text style={[styles.textGrey, { marginHorizontal: 10, marginTop: 0 }]}>2020 - Now</Text>
                             <Text style={[styles.textGrey, { marginHorizontal: 10 }]}>Lorem ipsum dolor sit amet, consectetur
@@ -54,7 +53,16 @@ const MentorDetail = () => {
                             <Text style={[styles.textGrey, { marginHorizontal: 10 }]}>Lorem ipsum dolor sit amet, consectetur
                                 adipiscing elit, sed do eiusmod tempor incid
                                 ut labore et dolore magna aliqua</Text>
-                        </View>
+                        </View> */}
+                        {
+                            mentorData?.experience?.map((exp, index) => (
+                                <View key={index} style={{ borderBottomWidth: 1, borderBottomColor: '#979797', paddingBottom: 10, marginBottom: 10 }}>
+                                    <Text style={styles.textLightBlack}>{exp.jobTitle}, {exp.companyName}</Text>
+                                    <Text style={[styles.textGrey, { marginHorizontal: 10, marginTop: 0 }]}>{formatDate(exp.startDate)} - {formatDate(exp.endDate)}</Text>
+                                    <Text style={[styles.textGrey, { marginHorizontal: 10 }]}>{exp.description}</Text>
+                                </View>
+                            ))
+                        }
                     </View>
                 </View>
             </ScrollView>

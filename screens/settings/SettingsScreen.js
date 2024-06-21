@@ -53,6 +53,10 @@ const SettingsScreen = () => {
     navigation.navigate('Login');
   };
 
+  goToApproval = () => {
+    navigation.navigate('ApprovalList');
+  }
+
   return (
     <View style={styles.container}>
       <LinearGradient colors={['#2064c8', 'transparent']}
@@ -102,19 +106,22 @@ const SettingsScreen = () => {
 
           <TouchableOpacity onPress={() => null} style={styles.accountItem} >
             <View style={{flexDirection:"row", alignItems: "center"}}>
-              <Image source={images.privacy} style={[styles.accountItemImage, {height: 20, width: 30, marginRight: 3}]} />
+              <Image source={images.privacy} style={[styles.accountItemImage, {height: 20, width: 26, marginRight: 8}]} />
               <Text style={styles.accountItemText}>Privacy Settings</Text>
             </View>
             <Image source={images.chevronRight} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => null} style={styles.accountItem} >
+          {
+          isAdmin == "true" ? 
+          <TouchableOpacity onPress={() => goToApproval()} style={styles.accountItem} >
             <View style={{flexDirection:"row", alignItems: "center"}}>
               <Image source={images.approval} style={[styles.accountItemImage, {height: 20, width: 20, marginRight: 14}]} />
               <Text style={styles.accountItemText}>Approval List</Text>
             </View>
             <Image source={images.chevronRight} />
-          </TouchableOpacity>
+          </TouchableOpacity> : null
+          }
 
           <TouchableOpacity onPress={() => onLogout()} style={styles.accountItem} >
             <View style={{flexDirection:"row", alignItems: "center"}}>

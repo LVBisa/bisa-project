@@ -145,7 +145,7 @@ const ChatScreen = ({ route }) => {
                     <View style={[styles.chatParent, {minHeight: Dimensions.get('window').height - 150 - keyboardHeight}]}>
                         {messages.map((data, index) => (
                             data.sender_id === senderId ? (
-                                <View style={styles.chatRight}>
+                                <View style={styles.chatRight} key={index}>
                                     <View>
                                         <View style={styles.chatBubbleRight}>
                                             <Text style={styles.bubbleRightText}>
@@ -162,7 +162,7 @@ const ChatScreen = ({ route }) => {
                                     </View>
                                 </View>
                             ) : (
-                                <View style={styles.chatLeft}>
+                                <View style={styles.chatLeft} key={index}>
                                     <View>
                                         <View style={styles.chatBubbleLeft}>
                                             <Text style={styles.bubbleLeftText}>
@@ -198,6 +198,7 @@ const ChatScreen = ({ route }) => {
             </View>
         </View>
         // </KeyboardAvoidingView>
+        
     );
 };
 

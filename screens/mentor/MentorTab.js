@@ -95,10 +95,10 @@ const MentorTab = () => {
                             <View>
                                 <Text style={styles.listName}>{mentor.username}</Text>
                                 <Text style={styles.listCourse}>{mentor.course}</Text>
-                                <View style={styles.like}>
+                                {/* <View style={styles.like}>
                                     <Image source={images.heart} />
                                     <Text style={styles.likeText}>{mentor.likes || 0} Likes</Text>
-                                </View>
+                                </View> */}
                             </View>
                         </View>
                        {(mentor.user_id === userId) ? <View></View> :

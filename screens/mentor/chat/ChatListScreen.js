@@ -133,7 +133,7 @@ const ChatListScreen = () => {
             </View>
             <ScrollView style={styles.chatList}>
                 {chatList.map((chat) => (
-                    <TouchableOpacity onPress={() => navigation.navigate('Chat', {mentor: chat})}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Chat', {mentor: chat})} key={chat.id}>
                         <View style={styles.chat}>
                             <Image source={{uri: isMentor === 'true' && chat.mentor_id == userId ? chat.profile_picture : chat.m_profile_picture}} style={styles.profile}></Image>
                             <View style={styles.chatDescription}>
