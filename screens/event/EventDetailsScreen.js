@@ -6,18 +6,28 @@ import { useRoute } from "@react-navigation/native";
 
 const EventDetailsScreen = () => {
   const route = useRoute();
-  const { eventDate } = route.params;
-  const { eventTitle } = route.params;
-  const { eventImage } = route.params;
+  const {
+    eventName,
+    datePosted,
+    poster,
+    description,
+    eventHost,
+    eventDate,
+    subtitle,
+  } = route.params;
 
   return (
     <View style={styles.layout}>
       <NavbarEventDetails />
       <ScrollView>
         <EventDetails
-          eventTitle={eventTitle}
+          eventName={eventName}
+          datePosted={datePosted}
+          poster={poster}
+          description={description}
+          eventHost={eventHost}
           eventDate={eventDate}
-          eventImage={eventImage}
+          subtitle={subtitle}
         />
       </ScrollView>
     </View>

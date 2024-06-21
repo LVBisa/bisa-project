@@ -2,25 +2,44 @@ import { useNavigation } from "@react-navigation/native";
 import { Text, View, Image, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const EventBox = ({ title, date, imageUrl, desc }) => {
+const EventBox = ({
+  eventName,
+  datePosted,
+  poster,
+  description,
+  eventHost,
+  eventDate,
+  subtitle,
+}) => {
   const navigation = useNavigation();
 
   function toEventDetails() {
     navigation.navigate("EventDetails", {
-      eventTitle: title,
-      eventDate: date,
-      eventImage: imageUrl,
+      eventName: eventName,
+      datePosted: datePosted,
+      poster: poster,
+      description: description,
+      eventHost: eventHost,
+      eventDate: eventDate,
+      subtitle: subtitle,
     });
+  }
+
+  function descFormat(desc) {
+    if (desc.length > 280) {
+      return desc.substring(0, 280) + "...";
+    }
+    return desc;
   }
 
   return (
     <TouchableOpacity onPress={toEventDetails} style={styles.layout}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.eventDate}>{date}</Text>
+      <Text style={styles.title}>{eventName}</Text>
+      <Text style={styles.eventDate}>{datePosted}</Text>
       <View style={styles.imageLayout}>
-        <Image source={imageUrl} />
+        <Image source={poster} />
       </View>
-      <Text style={styles.description}>{desc}</Text>
+      <Text style={styles.description}>{descFormat(description)}</Text>
     </TouchableOpacity>
   );
 };

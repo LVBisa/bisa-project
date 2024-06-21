@@ -1,11 +1,35 @@
-import React from "react";
-import { StyleSheet, View, Text, Dimensions } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, View, Text, ScrollView } from "react-native";
 import Navbar from "../../components/event/Navbar";
 import SearchBar from "../../components/event/SearchBar";
 import EventBox from "../../components/event/EventBox";
-import { ScrollView } from "react-native-gesture-handler";
+import { collection, query, getDocs } from "firebase/firestore";
+import { database } from "../../config/firebase";
 
 const EventScreen = () => {
+  const [event, setEvent] = useState([]);
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const eventCollections = collection(database, "Event");
+        const q = query(eventCollections);
+        const querySnapshot = await getDocs(q);
+
+        const eventsData = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+        }));
+
+        console.log(eventsData);
+        setEvent(eventsData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchEvent();
+  }, []);
+
   return (
     <View style={styles.backgroundLayout}>
       <Navbar />
@@ -17,42 +41,20 @@ const EventScreen = () => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewLayout}>
-        <EventBox
-          title="Tech Event"
-          date="15 Maret 2024"
-          imageUrl={require("../../assets/images/event-image.png")}
-          desc="Event yang diadakan oleh salah satu UKM di Universitas Bina Nusantara.
-          Bertema tekonologi dan inovasi. Event ini berisi tentang Talkshow dan
-          berbagai teknologi-teknologi baru yang telah dikembangkan sehingga
-          mahasiswa Bina Nusantara tetap terupdate..."
-        />
-        <EventBox
-          title="Tech Event"
-          date="15 Maret 2024"
-          imageUrl={require("../../assets/images/event-image.png")}
-          desc="Event yang diadakan oleh salah satu UKM di Universitas Bina Nusantara.
-          Bertema tekonologi dan inovasi. Event ini berisi tentang Talkshow dan
-          berbagai teknologi-teknologi baru yang telah dikembangkan sehingga
-          mahasiswa Bina Nusantara tetap terupdate..."
-        />
-        <EventBox
-          title="Tech Event"
-          date="15 Maret 2024"
-          imageUrl={require("../../assets/images/event-image.png")}
-          desc="Event yang diadakan oleh salah satu UKM di Universitas Bina Nusantara.
-          Bertema tekonologi dan inovasi. Event ini berisi tentang Talkshow dan
-          berbagai teknologi-teknologi baru yang telah dikembangkan sehingga
-          mahasiswa Bina Nusantara tetap terupdate..."
-        />
-        <EventBox
-          title="Tech Event"
-          date="15 Maret 2024"
-          imageUrl={require("../../assets/images/event-image.png")}
-          desc="Event yang diadakan oleh salah satu UKM di Universitas Bina Nusantara.
-          Bertema tekonologi dan inovasi. Event ini berisi tentang Talkshow dan
-          berbagai teknologi-teknologi baru yang telah dikembangkan sehingga
-          mahasiswa Bina Nusantara tetap terupdate..."
-        />
+        {event.map((eventData) => {
+          return (
+            <EventBox
+              key={eventData.eventId}
+              eventName={eventData.eventName}
+              datePosted={eventData.datePosted}
+              poster={require("../../assets/images/event-image.png")}
+              description={eventData.description}
+              eventHost={eventData.eventHost}
+              eventDate={eventData.eventDate}
+              subtitle={eventData.subtitle}
+            />
+          );
+        })}
       </ScrollView>
     </View>
   );
