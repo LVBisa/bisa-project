@@ -18,7 +18,6 @@ const CourseTab = () => {
           ...doc.data(),
         }));
 
-        console.log(coursesData);
         setCourse(coursesData);
       } catch (error) {
         console.log(error);

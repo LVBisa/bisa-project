@@ -20,7 +20,6 @@ const EventScreen = () => {
           ...doc.data(),
         }));
 
-        console.log(eventsData);
         setEvent(eventsData);
       } catch (error) {
         console.log(error);
