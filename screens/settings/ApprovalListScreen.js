@@ -42,7 +42,7 @@ const ApprovalListScreen = () => {
     }, []);
 
     useEffect(() => {
-        const q = query(collection(database, '赞同'), where('accepted', '==', false), where('rejected', '==', false));
+        const q = query(collection(database, '赞同'), where('accepted', '==', false), where('rejected', '==', false), where('category', '==', 'mentor'));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const mentors = [];
             querySnapshot.forEach((doc) => {
@@ -116,6 +116,8 @@ const ApprovalListScreen = () => {
             </View>
             <ScrollView>
                 <View style={styles.approvalContainer}>
+
+                    {/* MENTOR */}
                     {mentorList.length !== 0 ?
                         <View>
                         <View><Text style={styles.textNormal}>Mentor</Text></View>
@@ -161,7 +163,7 @@ const ApprovalListScreen = () => {
                             )
                             )}
                         </DataTable>
-                    </View> : <Text style={styles.textGrey}>No list to be approved</Text>}
+                    </View> : <Text style={styles.textGrey}>No mentor list to be approved</Text>}
                 </View>
             </ScrollView>
             <Modal visible={modalVisible} transparent={true} collapsable={true}>
