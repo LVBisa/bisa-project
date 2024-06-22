@@ -140,7 +140,7 @@ const ChatScreen = ({ route }) => {
             </View>
 
             {/* Chat */}
-            <View style={[styles.chatContainer, {height: Dimensions.get("window").height - 150 - keyboardHeight,}]}>
+            <View style={[styles.chatContainer, {height: Dimensions.get("window").height - 140 - keyboardHeight,}]}>
                 <ScrollView>
                     <View style={[styles.chatParent, {minHeight: Dimensions.get('window').height - 150 - keyboardHeight}]}>
                         {messages.map((data, index) => (

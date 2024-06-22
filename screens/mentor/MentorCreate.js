@@ -92,7 +92,7 @@ const MentorCreate = () => {
 
             const docRef = await addDoc(collection(database, "赞同"), {
                 mentor_name: username,
-                approval_id: `${approvalIdList.length + 1}`,
+                approval_id: `${list.length + 1}`,
                 accepted: false,
                 rejected: false,
                 user_id: userId,
