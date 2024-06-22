@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Dimensions } from "react-native";
 import BackArrow from "../UI/BackArrow";
 import CreateButton from "../UI/CreateButton";
 
-const Navbar = () => {
+const Navbar = ({ eventId }) => {
   return (
     <View style={styles.layout}>
       <View style={styles.leftLayout}>
@@ -10,7 +10,7 @@ const Navbar = () => {
         <Text style={styles.headerText}>Event Page</Text>
       </View>
       <View style={styles.createEvent}>
-        <CreateButton stack="CreateEvent" />
+        <CreateButton stack="CreateEvent" eventId={eventId} />
       </View>
     </View>
   );

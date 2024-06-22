@@ -1,6 +1,10 @@
-import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 
-const CreateEventDescriptionInput = ({ inputText, inputDesc }) => {
+const CreateEventDescriptionInput = ({
+  inputText,
+  inputDesc,
+  onChangeText,
+}) => {
   return (
     <View style={styles.layout}>
       <Text style={{ fontSize: 14, fontFamily: "Inter-Regular" }}>
@@ -12,6 +16,7 @@ const CreateEventDescriptionInput = ({ inputText, inputDesc }) => {
           placeholderTextColor={"#959595"}
           placeholder={inputDesc}
           multiline={true}
+          onChangeText={onChangeText}
         />
       </View>
     </View>

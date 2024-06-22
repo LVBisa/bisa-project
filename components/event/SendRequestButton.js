@@ -1,9 +1,13 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const SendRequestButton = ({ onChange }) => {
+const SendRequestButton = ({ onChange, isDisabled }) => {
   return (
     <View style={{ alignItems: "center", marginTop: 20 }}>
-      <TouchableOpacity onPress={() => onChange()} style={styles.layout}>
+      <TouchableOpacity
+        disabled={isDisabled}
+        onPress={() => onChange()}
+        style={isDisabled ? styles.buttonDisable : styles.layout}
+      >
         <Text style={styles.sendRequestText}>Send Request</Text>
       </TouchableOpacity>
     </View>
@@ -22,6 +26,13 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     fontFamily: "Inter-Bold",
+  },
+
+  buttonDisable: {
+    width: 119,
+    height: 30,
+    backgroundColor: "grey",
+    justifyContent: "center",
   },
 });
 

@@ -8,30 +8,38 @@ import { database } from "../../config/firebase";
 
 const EventScreen = () => {
   const [event, setEvent] = useState([]);
+  const [eventId, setEventId] = useState(0);
 
   useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const eventCollections = collection(database, "Event");
-        const q = query(eventCollections);
-        const querySnapshot = await getDocs(q);
-
-        const eventsData = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-        }));
-
-        setEvent(eventsData);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     fetchEvent();
   }, []);
 
+  const fetchEvent = async () => {
+    try {
+      const eventCollections = collection(database, "Event");
+      const q = query(eventCollections);
+      const querySnapshot = await getDocs(q);
+
+      const eventsData = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+      }));
+
+      eventsData.sort((a, b) => b.eventId - a.eventId);
+
+      if (eventsData.length > 0) {
+        setEventId(eventsData[0].eventId + 1);
+      } else {
+        setEventId(1);
+      }
+      setEvent(eventsData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View style={styles.backgroundLayout}>
-      <Navbar />
+      <Navbar eventId={eventId} />
       <View style={styles.layout}>
         <SearchBar />
         <View style={styles.eventBlock}>
