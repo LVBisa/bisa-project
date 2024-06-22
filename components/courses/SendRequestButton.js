@@ -1,12 +1,21 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const SendRequestButton = ({ onChange }) => {
+const SendRequestButton = ({ onChange, isDisabled }) => {
   return (
     <View style={{ alignItems: "center", marginTop: 20 }}>
-      <TouchableOpacity onPress={() => onChange()} style={styles.layout}>
+      <TouchableOpacity onPress={() => onChange()} 
+      style={
+        isDisabled ? 
+        {...styles.layout, backgroundColor: "#BDBDBD"} : 
+        styles.layout
+      } disabled={isDisabled}>
         <Text style={styles.sendRequestText}>Send Request</Text>
       </TouchableOpacity>
     </View>
+    //   }}>
+    //     <Text style={styles.sendRequestText}>Send Request</Text>
+    //   </TouchableOpacity>
+    // </View>
   );
 };
 

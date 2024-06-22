@@ -8,9 +8,9 @@ const NavbarCourseDetails = () => {
             <BackArrow />
             <Text style={styles.headerText}>Course Details</Text>
         </View>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
             <Text style={styles.chatText}>Chat</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
     </View>
   );
 };

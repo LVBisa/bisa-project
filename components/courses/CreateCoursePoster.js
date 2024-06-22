@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
     width: 87,
     height: 28,
     justifyContent: "center",
-    backgroundColor: "#EAECEF",
+    backgroundColor: "#1C61C7",
     marginTop: 20,
   },
 
   uploadText: {
     fontSize: 11,
-    color: "#565E6C",
+    color: "white",
     textAlign: "center",
     fontFamily: "Inter-Regular",
   },

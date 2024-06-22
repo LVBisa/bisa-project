@@ -1,11 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-const CreateCoursePopup = ({ onChange }) => {
+const CreateCoursePopup = ({}) => {
   const navigation = useNavigation();
 
   function toEventScreen() {
-    onChange();
     navigation.navigate("Mentor");
   }
 

@@ -1,6 +1,6 @@
 import { View, Text, TextInput, StyleSheet, Dimensions } from "react-native";
 
-const CreateCourseTextBox = ({ inputText, inputDesc }) => {
+const CreateCourseTextBox = ({ inputText, inputDesc, onChangeText }) => {
   return (
     <View style={styles.layout}>
       <Text style={{ fontSize: 14, fontFamily: "Inter-Regular", fontWeight: "bold", }}>
@@ -12,6 +12,7 @@ const CreateCourseTextBox = ({ inputText, inputDesc }) => {
           placeholderTextColor={"#959595"}
           placeholder={inputDesc}
           multiline={true}
+          onChangeText={(text) => {onChangeText(text)}}
         />
       </View>
     </View>
