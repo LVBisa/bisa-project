@@ -4,8 +4,13 @@ BISA adalah menjadi platform pembelajaran kolaboratif terdepan di Binus Universi
 
 Beberapa tampilan yang ada pada aplikasi kami
 ![image](https://github.com/LVBisa/bisa-project/assets/114162232/e8af2752-25b6-4582-a36e-786d54702e7e)
+
+
 ![image](https://github.com/LVBisa/bisa-project/assets/114162232/e8b3cb7f-b897-49e1-b618-9a3610523aad)
 
+
+## Members
+![image](https://github.com/LVBisa/bisa-project/assets/114162232/70ace845-7dac-41b1-b46d-03e734e6f2da)
 
 
 ## How to run project
