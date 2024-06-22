@@ -34,7 +34,7 @@ const EventBox = ({
     >
       <ImageBackground
         style={styles.layout}
-        source={require("../../../assets/images/event-image.png")}
+        source={{uri: poster}}
       >
         <Text style={styles.text}>{eventName}</Text>
       </ImageBackground>
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontFamily: "Inter-Bold",
+    fontWeight: "bold",
     color: "white",
     paddingTop: 75,
     paddingLeft: 15,

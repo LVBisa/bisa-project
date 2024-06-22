@@ -9,7 +9,6 @@ import React from "react";
 const Tab = createBottomTabNavigator();
 
 const Home = ({ route }) => {
-  const email = route.params.email;
 
   return (
     <Tab.Navigator>
@@ -25,7 +24,6 @@ const Home = ({ route }) => {
             style={styles.icon}
           />
           )}}
-        initialParams={{ email: email }}
       />
       <Tab.Screen
         name="Schedule"

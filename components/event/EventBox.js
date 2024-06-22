@@ -37,7 +37,7 @@ const EventBox = ({
       <Text style={styles.title}>{eventName}</Text>
       <Text style={styles.eventDate}>{datePosted}</Text>
       <View style={styles.imageLayout}>
-        <Image source={poster} />
+        <Image style={{ width: 300, height: 350 }} source={{ uri: poster }} />        
       </View>
       <Text style={styles.description}>{descFormat(description)}</Text>
     </TouchableOpacity>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   layout: {
     marginTop: 20,
     width: 335,
-    height: 350,
+    // height: 350,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

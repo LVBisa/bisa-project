@@ -1,18 +1,27 @@
-import { ScrollView, SafeAreaView, StyleSheet } from "react-native";
+import { ScrollView, SafeAreaView, StyleSheet, RefreshControl } from "react-native";
 import Header from "../../components/home/Header";
 import Banner from "../../components/home/Banner/Banner";
 import Category from "../../components/home/Category/Category";
 import TopCourse from "../../components/home/TopCourse/TopCourse";
 import TopEvent from "../../components/home/TopEvent/TopEvent";
 import TopResource from "../../components/home/TopResource/TopResource";
+import React, {useState} from "react";
 
 const HomeScreen = ({ route }) => {
-  const email = route.params.email;
+  const [refreshing, setRefreshing] = React.useState(false);
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+  
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Header email={email} />
+      <ScrollView refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
+        <Header/>
         <Banner />
         <Category />
         <TopCourse />

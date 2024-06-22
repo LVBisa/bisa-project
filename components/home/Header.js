@@ -1,9 +1,23 @@
 import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Header = ({email}) => {
+const Header = ({ }) => {
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const un = await AsyncStorage.getItem('username');
+      
+      setUsername(un);
+      
+    };
+
+    fetchData();
+  }, []);
   return (
     <View style={styles.layout}>
-      <Text style={styles.helloText}>Hello, {email}!</Text>
+      <Text style={styles.helloText}>Hello, {username}!</Text>
       <Text style={styles.subText}>What do you need today?</Text>
     </View>
   );

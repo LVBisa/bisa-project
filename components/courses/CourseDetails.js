@@ -47,6 +47,7 @@ const CourseDetails = ({
 
 const styles = StyleSheet.create({
   container: {
+    minHeight: Dimensions.get("window").height,
     backgroundColor: "white",
     paddingTop: 15,
     paddingBottom: 20,

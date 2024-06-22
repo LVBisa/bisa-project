@@ -18,6 +18,7 @@ import { storage } from "../../config/firebase";
 import * as DocumentPicker from "expo-document-picker";
 import { updateDoc, getDocs, collection, addDoc, orderBy, query, onSnapshot, where, doc } from 'firebase/firestore';
 import { database } from "../../config/firebase";
+import Category from "../../components/home/Category/Category";
 
 const UploadScreen = () => {
   const [title, setTitle] = useState("");
@@ -28,17 +29,26 @@ const UploadScreen = () => {
 
   const navigation = useNavigation();
 
-  const onSubmit = () => {
-    console.log(title, authorName, authorMajor, selectedFile);
+  const onSubmit = async () => {
 
     const option = { day: '2-digit', month: 'long', year: 'numeric' };
-    const resourceRef = collection(database, "Resource");
+    const approval = await getDocs(query(collection(database, "赞同")));
+    let list = [];
+    approval.forEach((doc) => {
+      list.push(doc.data());
+    });
+
+    const resourceRef = collection(database, "赞同");
     addDoc(resourceRef, {
+      approval_id: `${list.length + 1}`,
       title: title,
       authorName: authorName,
       authorMajor: authorMajor,
       resourceUrl: selectedFile,
-      datePosted: new Date().toLocaleDateString("en-US", option)
+      datePosted: new Date().toLocaleDateString("en-US", option),
+      category: "resource",
+      accepted: false,
+      rejected: false,
     });
 
 
@@ -151,7 +161,7 @@ const UploadScreen = () => {
           <TouchableOpacity style={styles.submitBtn} onPress={() => onSubmit()}
             disabled={isDisabled}
           >
-            <Text style={[styles.submitText, isDisabled ? {backgroundColor: "#BDBDBD"} : null]}>
+            <Text style={[styles.submitText, isDisabled ? { backgroundColor: "#BDBDBD" } : null]}>
               Post Resource
             </Text>
           </TouchableOpacity>

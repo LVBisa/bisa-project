@@ -53,7 +53,7 @@ const MentorScreen = () => {
     <View style={{ flex: 1 }}>
       <View style={styles.navbar}>
         <View style={styles.titleContainer}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate("HomeTabs")}>
             <View>
               <Image source={images.arrow} style={{ height: 24 }} />
             </View>

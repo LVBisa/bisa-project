@@ -5,6 +5,7 @@ import { updateDoc, getDocs, collection, addDoc, orderBy, query, onSnapshot, whe
 import { database } from '../../config/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DataTable } from 'react-native-paper';
+import EventInfo from '../../components/event/EventInfo';
 
 const ApprovalListScreen = () => {
     const navigation = useNavigation();
@@ -16,9 +17,20 @@ const ApprovalListScreen = () => {
     const [email, setEmail] = useState(null);
     const [profilePicture, setPP] = useState(null);
 
+    const [courseList, setCourseList] = useState([]);
     const [mentorList, setMentorList] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [eventList, setEventList] = useState([]);
+    const [resourceList, setResourceList] = useState([]);
+
+    const [modalVisibleCourse, setModalVisibleCourse] = useState(false);
+    const [modalVisibleMentor, setModalVisibleMentor] = useState(false);
+    const [modalVisibleEvent, setModalVisibleEvent] = useState(false);
+    const [modalVisibleResource, setModalVisibleResource] = useState(false);
+
+    const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedMentor, setSelectedMentor] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedResource, setSelectedResource] = useState(null);
 
 
     useEffect(() => {
@@ -41,6 +53,20 @@ const ApprovalListScreen = () => {
         fetchData();
     }, []);
 
+    // Course
+    useEffect(() => {
+        const q = query(collection(database, '赞同'), where('accepted', '==', false), where('rejected', '==', false), where('category', '==', 'course'));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const courses = [];
+            querySnapshot.forEach((doc) => {
+                courses.push(doc.data());
+            });
+            setCourseList(courses);
+        });
+        return unsubscribe;
+    }, []);
+
+    // Mentor
     useEffect(() => {
         const q = query(collection(database, '赞同'), where('accepted', '==', false), where('rejected', '==', false), where('category', '==', 'mentor'));
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -51,10 +77,56 @@ const ApprovalListScreen = () => {
             setMentorList(mentors);
         });
         return unsubscribe;
-    }
-        , []);
+    }, []);
 
-    const onApprove = async (mentor) => {
+    // Event
+    useEffect(() => {
+        const q = query(collection(database, '赞同'), where('accepted', '==', false), where('rejected', '==', false), where('category', '==', 'event'));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const events = [];
+            querySnapshot.forEach((doc) => {
+                events.push(doc.data());
+            });
+            setEventList(events);
+        });
+        return unsubscribe;
+    }, []);
+
+    // Resource
+    useEffect(() => {
+        const q = query(collection(database, '赞同'), where('accepted', '==', false), where('rejected', '==', false), where('category', '==', 'resource'));
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+            const resources = [];
+            querySnapshot.forEach((doc) => {
+                resources.push(doc.data());
+            });
+            setResourceList(resources);
+        });
+        return unsubscribe;
+    }, []);
+
+    const onApproveCourse = async (course) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', course.approval_id)));
+        const datas = getData.docs[0].id;
+
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
+            accepted: true,
+        });
+
+        const courseRef = collection(database, "Course");
+        await addDoc(courseRef, {
+            title: course.title,
+            subTitle: course.subTitle,
+            endDate: course.endDate,
+            poster: course.poster,
+            authorName: course.authorName,
+            courseDescription: course.courseDescription,
+            price: course.price,
+        });
+    }
+
+    const onApproveMentor = async (mentor) => {
         const getMentor = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', mentor.approval_id)));
         const mentorData = getMentor.docs[0].id;
 
@@ -75,19 +147,105 @@ const ApprovalListScreen = () => {
         });
     }
 
-    const onReject = async (mentor) => {
-        const getMentor = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', mentor.approval_id)));
-        const mentorData = getMentor.docs[0].id;
+    const onApproveEvent = async (event) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', event.approval_id)));
+        const datas = getData.docs[0].id;
 
-        const mentorRef = doc(database, '赞同', mentorData);
-        await updateDoc(mentorRef, {
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
+            accepted: true,
+        });
+
+        const eventRef = collection(database, "Event");
+        await addDoc(eventRef, {
+            eventName: event.eventName,
+            subtitle: event.subtitle,
+            eventHost: event.eventHost,
+            description: event.description,
+            poster: event.poster,
+            eventId: event.eventId,
+            eventDate: event.eventDate,
+            datePosted: event.datePosted,
+        });
+    }
+
+    const onApproveResource = async (resource) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', resource.approval_id)));
+        const datas = getData.docs[0].id;
+
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
+            accepted: true,
+        });
+
+        const resourceRef = collection(database, "Resource");
+        await addDoc(resourceRef, {
+            title: resource.title,
+            authorName: resource.authorName,
+            authorMajor: resource.authorMajor,
+            resourceUrl: resource.resourceUrl,
+            datePosted: resource.datePosted,
+        });
+    }
+
+    const onRejectCourse = async (course) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', course.approval_id)));
+        const datas = getData.docs[0].id;
+
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
             rejected: true,
         });
     }
 
-    const onPressDetail = (mentor) => {
-        setModalVisible(true);
+    const onRejectMentor = async (mentor) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', mentor.approval_id)));
+        const datas = getData.docs[0].id;
+
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
+            rejected: true,
+        });
+    }
+
+    const onRejectEvent = async (event) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', event.approval_id)));
+        const datas = getData.docs[0].id;
+
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
+            rejected: true,
+        });
+    }
+
+    const onRejectResource = async (resource) => {
+        const getData = await getDocs(query(collection(database, '赞同'), where('approval_id', '==', resource.approval_id)));
+        const datas = getData.docs[0].id;
+
+        const ref = doc(database, '赞同', datas);
+        await updateDoc(ref, {
+            rejected: true,
+        });
+    }
+
+    const onPressDetailCourse = (course) => {
+        setModalVisibleCourse(true);
+        setSelectedCourse(course);
+    }
+
+    const onPressDetailMentor = (mentor) => {
+        setModalVisibleMentor(true);
         setSelectedMentor(mentor);
+    }
+
+    const onPressDetailEvent = (event) => {
+        setModalVisibleEvent(true);
+        setSelectedEvent(event);
+    }
+
+    const onPressDetailResource = (resource) => {
+        setModalVisibleResource(true);
+        setSelectedResource(resource);
     }
 
     formatDate = (date) => {
@@ -116,62 +274,245 @@ const ApprovalListScreen = () => {
             </View>
             <ScrollView>
                 <View style={styles.approvalContainer}>
+                    {/* COURSE */}
+                    {courseList.length !== 0 ?
+                        <View style={{ marginBottom: 20 }}>
+                            <View><Text style={styles.textNormal}>Course</Text></View>
+                            <DataTable style={styles.table}>
+                                <DataTable.Header style={styles.header}>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Title
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Detail
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Action
+                                        </Text>
+                                    </DataTable.Title>
+                                </DataTable.Header>
+                                {courseList.map((item, index) => (
+                                    <DataTable.Row key={index}>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <Text style={styles.textGrey}>
+                                                {item.title}
+                                            </Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onPressDetailCourse(item)}>
+                                                <Image source={images.eye} style={styles.arrow} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onRejectCourse(item)}>
+                                                <Image source={images.reject} style={styles.action} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => onApproveCourse(item)}>
+                                                <Image source={images.approve} style={styles.action} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                    </DataTable.Row>
+                                )
+                                )}
+                            </DataTable>
+                        </View> : <Text style={[styles.textGrey, { marginBottom: 20 }]}>No course list to be approved</Text>}
 
                     {/* MENTOR */}
                     {mentorList.length !== 0 ?
-                        <View>
-                        <View><Text style={styles.textNormal}>Mentor</Text></View>
-                        <DataTable style={styles.table}>
-                            <DataTable.Header style={styles.header}>
-                                <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={styles.tableTitle}>
-                                        Title
-                                    </Text>
-                                </DataTable.Title>
-                                <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={styles.tableTitle}>
-                                        Detail
-                                    </Text>
-                                </DataTable.Title>
-                                <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
-                                    <Text style={styles.tableTitle}>
-                                        Action
-                                    </Text>
-                                </DataTable.Title>
-                            </DataTable.Header>
-                            {mentorList.map((item, index) => (
-                                <DataTable.Row key={index}>
-                                    <DataTable.Cell style={styles.cell}>
-                                        <Text style={styles.textGrey}>
-                                            {item.mentor_name}
+                        <View style={{ marginBottom: 20 }}>
+                            <View><Text style={styles.textNormal}>Mentor</Text></View>
+                            <DataTable style={styles.table}>
+                                <DataTable.Header style={styles.header}>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Name
                                         </Text>
-                                    </DataTable.Cell>
-                                    <DataTable.Cell style={styles.cell}>
-                                        <TouchableOpacity onPress={() => onPressDetail(item)}>
-                                            <Image source={images.eye} style={styles.arrow} />
-                                        </TouchableOpacity>
-                                    </DataTable.Cell>
-                                    <DataTable.Cell style={styles.cell}>
-                                        <TouchableOpacity onPress={() => onReject(item)}>
-                                            <Image source={images.reject} style={styles.action} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => onApprove(item)}>
-                                            <Image source={images.approve} style={styles.action} />
-                                        </TouchableOpacity>
-                                    </DataTable.Cell>
-                                </DataTable.Row>
-                            )
-                            )}
-                        </DataTable>
-                    </View> : <Text style={styles.textGrey}>No mentor list to be approved</Text>}
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Detail
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Action
+                                        </Text>
+                                    </DataTable.Title>
+                                </DataTable.Header>
+                                {mentorList.map((item, index) => (
+                                    <DataTable.Row key={index}>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <Text style={styles.textGrey}>
+                                                {item.mentor_name}
+                                            </Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onPressDetailMentor(item)}>
+                                                <Image source={images.eye} style={styles.arrow} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onRejectMentor(item)}>
+                                                <Image source={images.reject} style={styles.action} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => onApproveMentor(item)}>
+                                                <Image source={images.approve} style={styles.action} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                    </DataTable.Row>
+                                )
+                                )}
+                            </DataTable>
+                        </View> : <Text style={[styles.textGrey, { marginBottom: 20 }]}>No mentor list to be approved</Text>}
+
+                    {/* EVENT */}
+                    {eventList.length !== 0 ?
+                        <View style={{ marginBottom: 20 }}>
+                            <View><Text style={styles.textNormal}>Event</Text></View>
+                            <DataTable style={styles.table}>
+                                <DataTable.Header style={styles.header}>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Title
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Detail
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Action
+                                        </Text>
+                                    </DataTable.Title>
+                                </DataTable.Header>
+                                {eventList.map((item, index) => (
+                                    <DataTable.Row key={index}>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <Text style={styles.textGrey}>
+                                                {item.eventName}
+                                            </Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onPressDetailEvent(item)}>
+                                                <Image source={images.eye} style={styles.arrow} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onRejectEvent(item)}>
+                                                <Image source={images.reject} style={styles.action} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => onApproveEvent(item)}>
+                                                <Image source={images.approve} style={styles.action} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                    </DataTable.Row>
+                                )
+                                )}
+                            </DataTable>
+                        </View> : <Text style={[styles.textGrey, { marginBottom: 20 }]}>No event list to be approved</Text>}
+
+                    {/* RESOURCE */}
+                    {resourceList.length !== 0 ?
+                        <View style={{ marginBottom: 20 }}>
+                            <View><Text style={styles.textNormal}>Resource</Text></View>
+                            <DataTable style={styles.table}>
+                                <DataTable.Header style={styles.header}>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Title
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Detail
+                                        </Text>
+                                    </DataTable.Title>
+                                    <DataTable.Title style={{ justifyContent: "center", alignItems: "center" }}>
+                                        <Text style={styles.tableTitle}>
+                                            Action
+                                        </Text>
+                                    </DataTable.Title>
+                                </DataTable.Header>
+                                {resourceList.map((item, index) => (
+                                    <DataTable.Row key={index}>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <Text style={styles.textGrey}>
+                                                {item.title}
+                                            </Text>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onPressDetailResource(item)}>
+                                                <Image source={images.eye} style={styles.arrow} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                        <DataTable.Cell style={styles.cell}>
+                                            <TouchableOpacity onPress={() => onRejectResource(item)}>
+                                                <Image source={images.reject} style={styles.action} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => onApproveResource(item)}>
+                                                <Image source={images.approve} style={styles.action} />
+                                            </TouchableOpacity>
+                                        </DataTable.Cell>
+                                    </DataTable.Row>
+                                )
+                                )}
+                            </DataTable>
+                        </View> : <Text style={[styles.textGrey, { marginBottom: 20 }]}>No resource list to be approved</Text>}
                 </View>
             </ScrollView>
-            <Modal visible={modalVisible} transparent={true} collapsable={true}>
-                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+            {/* Course Modal */}
+            <Modal visible={modalVisibleCourse} transparent={true} collapsable={true}>
+                <TouchableWithoutFeedback onPress={() => setModalVisibleCourse(false)}>
                     <View style={styles.modalOverlay}>
                         <TouchableWithoutFeedback>
                             <View style={styles.modal}>
-                                <View style={{ width: "100%" }}>
+                                <ScrollView style={{ width: "100%", paddingHorizontal: 20 }}>
+                                    <Text style={styles.header}>{selectedCourse?.title}</Text>
+                                    <Text style={styles.subheader}>{selectedCourse?.subtitle}</Text>
+                                    <View style={styles.infoSection}>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Image
+                                                style={{ marginTop: 3, marginRight: 5 }}
+                                                source={require("../../assets/images/person.png")}
+                                            />
+                                            <Text> {selectedCourse?.authorName}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: "row" }}>
+                                            <Image
+                                                style={{ marginTop: 3, marginRight: 5 }}
+                                                source={require("../../assets/images/clock.png")}
+                                            />
+                                            <Text>{selectedCourse?.endDate}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                                        <Image
+                                            style={{ marginTop: 15, width: 300, height: 435 }}
+                                            source={{ uri: selectedCourse?.poster }}
+                                        />
+                                    </View>
+                                    <Text style={styles.descriptionText}>{selectedCourse?.courseDescription}</Text>
+                                </ScrollView>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
+            {/* Mentor Modal */}
+            <Modal visible={modalVisibleMentor} transparent={true} collapsable={true}>
+                <TouchableWithoutFeedback onPress={() => setModalVisibleMentor(false)}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modal}>
+                                <ScrollView style={{ width: "100%" }}>
                                     <View style={styles.profile}>
                                         <Image source={{ uri: selectedMentor?.profile_picture }} style={{ width: 80, height: 80, borderRadius: 50 }}></Image>
                                         <Text style={styles.profileName}>{selectedMentor?.mentor_name}</Text>
@@ -195,13 +536,74 @@ const ApprovalListScreen = () => {
                                             }
                                         </View>
                                     </View>
-                                </View>
+                                </ScrollView>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-        </KeyboardAvoidingView>
+
+            {/* Event Modal */}
+            <Modal visible={modalVisibleEvent} transparent={true} collapsable={true}>
+                <TouchableWithoutFeedback onPress={() => setModalVisibleEvent(false)}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modal}>
+                                <ScrollView style={{ width: "100%", paddingHorizontal: 20 }}>
+                                    <Text style={styles.header}>{selectedEvent?.eventName}</Text>
+                                    <Text style={styles.subheader}>{selectedEvent?.subtitle}</Text>
+                                    <View style={styles.infoSection}>
+                                        <View>
+                                            <EventInfo
+                                                imageUrl={require("../../assets/images/person.png")}
+                                                info={selectedEvent?.eventHost}
+                                            />
+                                        </View>
+                                        <View>
+                                            <EventInfo
+                                                imageUrl={require("../../assets/images/clock.png")}
+                                                info={selectedEvent?.datePosted}
+                                            />
+                                            <EventInfo
+                                                imageUrl={require("../../assets/images/calendar.png")}
+                                                info={selectedEvent?.eventDate}
+                                            />
+                                        </View>
+                                    </View>
+                                    <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                                        <Image style={{ marginTop: 15, width: 300, height: 350 }} source={{ uri: selectedEvent?.poster }} />
+                                    </View>
+                                    <Text style={styles.descriptionText}>{selectedEvent?.description}</Text>
+                                </ScrollView>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
+            {/* Resource Modal */}
+            <Modal visible={modalVisibleResource} transparent={true} collapsable={true}>
+                <TouchableWithoutFeedback onPress={() => setModalVisibleResource(false)}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modal}>
+                                <ScrollView style={{ width: "100%", paddingHorizontal: 20 }}>
+                                    <Text style={styles.title}>{selectedResource?.title}</Text>
+                                    <Text style={styles.details}>By : {selectedResource?.authorName}</Text>
+                                    <Text style={styles.details}>Uploaded at : {selectedResource?.datePosted}</Text>
+                                    <Text style={styles.details}>Major : {selectedResource?.authorMajor}</Text>
+                                    <Image
+                                        source={{ uri: selectedResource?.resourceUrl }}
+                                        style={{height: 300, }}
+                                    />
+                                </ScrollView>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal >
+
+        </KeyboardAvoidingView >
     );
 };
 
@@ -328,6 +730,38 @@ const styles = StyleSheet.create({
         marginHorizontal: 24,
         marginTop: 20
     },
+    header: {
+        fontSize: 16,
+        fontFamily: "Inter-Bold",
+    },
+
+    subheader: {
+        fontSize: 13,
+        color: "#979797",
+        fontFamily: "Inter-Bold",
+        paddingTop: 5,
+    },
+
+    infoSection: {
+        paddingTop: 10,
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+
+    descriptionText: {
+        paddingTop: 10,
+        textAlign: "justify",
+        fontFamily: "Inter-Regular",
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 10,
+      },
+      details: {
+        fontSize: 16,
+        marginBottom: 5,
+      },
 });
 
 const images = {

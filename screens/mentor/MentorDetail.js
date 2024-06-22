@@ -12,6 +12,15 @@ const MentorDetail = ({ route }) => {
 
     const [userId, setUserId] = useState(null);
 
+    formatDate = (date) => {
+        if (date === "Now") return date;
+        const dateStr = new Date(date);
+
+        const options = { year: 'numeric', month: 'long' };
+        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(dateStr);
+        return formattedDate
+    }
+    
     useEffect(() => {
         const fetchData = async () => {
         const ui = await AsyncStorage.getItem('user_id');

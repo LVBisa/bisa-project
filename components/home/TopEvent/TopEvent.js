@@ -50,7 +50,7 @@ const TopEvent = () => {
               key={eventData.eventId}
               eventName={eventData.eventName}
               datePosted={eventData.datePosted}
-              poster={require("../../../assets/images/event-image.png")}
+              poster={eventData.poster}
               description={eventData.description}
               eventHost={eventData.eventHost}
               eventDate={eventData.eventDate}

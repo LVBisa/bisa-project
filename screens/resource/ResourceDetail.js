@@ -76,7 +76,7 @@ export default function App({ route }) {
           <Text style={styles.downloadText}>Download</Text>
         </TouchableOpacity>
         <Image
-          source={{uri: resourceUrl}} // Use require for local images
+          source={{uri: resourceUrl}}
           style={styles.fullImage}
         />
         {/* <TouchableOpacity onPress={handleBookmarkPress}>
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
   fullImage: {
     width: "100%",
-    height: Dimensions.get("window").height - 200, // Adjust as needed to cover the screen
+    height: Dimensions.get("window").height - 200,
     resizeMode: "cover",
     marginBottom: 20,
   },

@@ -8,7 +8,7 @@ import SendRequestButton from "../../components/event/SendRequestButton";
 import CreateEventDescriptionInput from "../../components/event/CreateEventDescriptionInput";
 import { useState } from "react";
 import CreateEventPopup from "../../components/event/CreateEventPopup";
-import { addDoc, collection } from "@firebase/firestore";
+import { getDocs, collection, addDoc, orderBy, query, onSnapshot, where } from 'firebase/firestore';
 import { database } from "../../config/firebase";
 
 const CreateEventScreen = ({ route }) => {
@@ -43,14 +43,25 @@ const CreateEventScreen = ({ route }) => {
 
     const dateFormat = `${month} ${date}, ${year}`;
 
-    const docRef = await addDoc(collection(database, "Event"), {
+    const approval = await getDocs(query(collection(database, "赞同")));
+    let list = [];
+    approval.forEach((doc) => {
+      list.push(doc.data());
+    });
+
+    const docRef = await addDoc(collection(database, "赞同"), {
+      approval_id: `${list.length + 1}`,
       eventName: eventName,
       subtitle: subtitle,
       eventHost: eventHost,
       description: description,
-      evenId: eventId,
+      poster: poster,
+      eventId: eventId,
       eventDate: eventDate,
       datePosted: dateFormat,
+      accepted: false,
+      rejected: false,
+      category: "event",
     });
     setModalVisible(!modalVisible);
   }
@@ -79,11 +90,16 @@ const CreateEventScreen = ({ route }) => {
     setDescription(description);
   }
 
+  const onSuccessUpload = (url) => {
+    setPoster(url);
+  }
+
   const isDisabled =
     description == "" ||
     eventHost == "" ||
     eventName == "" ||
     subtitle == "" ||
+    poster == "" ||
     eventDate == "";
 
   return (
@@ -120,7 +136,7 @@ const CreateEventScreen = ({ route }) => {
             <EventCalendar onChangeDate={handleEventDate} />
           </View>
         </View>
-        <CreateEventPoster />
+        <CreateEventPoster onChange={onSuccessUpload} />
         <CreateEventDescriptionInput
           inputText="Event Description"
           inputDesc="Write your event description here!"

@@ -38,7 +38,7 @@ const EventDetails = ({
         </View>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <Image style={{ marginTop: 15 }} source={poster} />
+        <Image style={{ marginTop: 15, width: 300, height: 350 }} source={{uri: poster}} />
       </View>
       <Text style={styles.descriptionText}>{description}</Text>
     </View>
