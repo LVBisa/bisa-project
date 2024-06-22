@@ -8,26 +8,40 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  Image
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import BackArrow from "../../components/UI/BackArrow";
 import { useNavigation } from "@react-navigation/native";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../config/firebase";
+import * as DocumentPicker from "expo-document-picker";
+import { updateDoc, getDocs, collection, addDoc, orderBy, query, onSnapshot, where, doc } from 'firebase/firestore';
+import { database } from "../../config/firebase";
 
 const UploadScreen = () => {
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [authorMajor, setAuthorMajor] = useState("");
-  const [file, setFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const navigation = useNavigation();
 
-  const handleFileChange = () => {
-    // Implement file picker logic here
-  };
+  const onSubmit = () => {
+    console.log(title, authorName, authorMajor, selectedFile);
 
-  const handleSubmit = () => {
-    // Implement submit logic here
+    const option = { day: '2-digit', month: 'long', year: 'numeric' };
+    const resourceRef = collection(database, "Resource");
+    addDoc(resourceRef, {
+      title: title,
+      authorName: authorName,
+      authorMajor: authorMajor,
+      resourceUrl: selectedFile,
+      datePosted: new Date().toLocaleDateString("en-US", option)
+    });
+
+
     setModalVisible(true);
   };
 
@@ -36,14 +50,41 @@ const UploadScreen = () => {
     navigation.goBack();
   };
 
+
+  const onUpload = async () => {
+    let result = await DocumentPicker.getDocumentAsync({
+      type: "image/*",
+    });
+
+    if (result.type === "success") {
+      const { name, size, uri } = result;
+
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      const storageRef = ref(storage, `resource/${name}`);
+      await uploadBytes(storageRef, blob);
+
+      const url = await getDownloadURL(storageRef);
+      setSelectedFile(url);
+    }
+  }
+
+  const isDisabled = title === "" || authorName === "" || authorMajor === "" || selectedFile === null;
+
   return (
     <ScrollView>
-      <View style={styles.arrow}>
-        <BackArrow />
+      <View style={styles.navbar}>
+        <View style={styles.titleContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <View>
+              <Image source={require("../../assets/images/arrow-back.png")} style={{ height: 24 }} />
+            </View>
+          </TouchableOpacity>
+          <Text style={styles.navbarText}>Create Resource</Text>
+        </View>
       </View>
       <View style={styles.container}>
-        <Text style={styles.headerText}>Upload Resources</Text>
-
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
           <TextInput
@@ -74,7 +115,27 @@ const UploadScreen = () => {
           />
         </View>
 
-        <View style={styles.fileUpload}>
+        <View style={[styles.inputContainer]}>
+          <Text style={styles.label}>Document/Resource</Text>
+          <View style={styles.dropbox}>
+            {selectedFile ?
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <Image source={{ uri: selectedFile }} style={{ width: 100, height: 110 }} />
+              </View>
+              :
+              <Text style={styles.dropboxDesc}>
+                Click upload button below to upload your resource
+              </Text>}
+            <View style={{ alignItems: "center" }}>
+              <TouchableOpacity style={styles.uploadInput} onPress={() => onUpload()}>
+                <Text style={styles.uploadText}>{selectedFile ? "Change" : "Upload"}</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+
+        {/* <View style={styles.fileUpload}>
           <Text style={styles.fileText}>Upload Supported File</Text>
           <TouchableOpacity
             style={styles.fileButton}
@@ -84,9 +145,19 @@ const UploadScreen = () => {
               {file ? file.name : "Catatan Fisika"}
             </Text>
           </TouchableOpacity>
+        </View> */}
+
+        <View style={styles.buttonSubmit}>
+          <TouchableOpacity style={styles.submitBtn} onPress={() => onSubmit()}
+            disabled={isDisabled}
+          >
+            <Text style={[styles.submitText, isDisabled ? {backgroundColor: "#BDBDBD"} : null]}>
+              Post Resource
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <Button title="Post Resource" onPress={handleSubmit} />
+        {/* <Button title="Post Resource" onPress={handleSubmit} style={styles.submitBtn}/> */}
 
         <Modal
           animationType="slide"
@@ -109,9 +180,36 @@ const UploadScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  navbar: {
+    paddingTop: 60,
+    paddingHorizontal: 24,
+    paddingBottom: 20,
+    height: 110,
+    width: Dimensions.get("window").width,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: "#A3A3A3",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  navbarText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    marginLeft: 10,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  navbarIcon: {
+    flexDirection: "row",
+    paddingRight: 10,
+    alignItems: "center",
+  },
   arrow: {
-    paddingTop: 50,
-    paddingLeft: 10,
+    height: 24,
+    width: 24,
   },
   container: {
     flex: 1,
@@ -119,6 +217,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     height: Dimensions.get("window").height,
+    backgroundColor: "white",
   },
   headerText: {
     fontSize: 24,
@@ -176,12 +275,59 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 20,
-    padding: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
     backgroundColor: "#007bff",
     borderRadius: 5,
   },
   closeButtonText: {
     color: "white",
+  },
+  dropbox: {
+    width: Dimensions.get("window").width - 40,
+    height: 177,
+    backgroundColor: "#EDFFFF",
+    justifyContent: "center",
+    marginTop: 5,
+    alignItems: "center",
+  },
+
+  dropboxDesc: {
+    fontSize: 11,
+    textAlign: "center",
+    paddingHorizontal: 50,
+    color: "#6E7787",
+    fontFamily: "Inter-Regular",
+  },
+
+  uploadInput: {
+    width: 87,
+    height: 28,
+    justifyContent: "center",
+    backgroundColor: "#1C61C7",
+    marginTop: 20,
+  },
+
+  uploadText: {
+    fontSize: 11,
+    color: "white",
+    textAlign: "center",
+    fontFamily: "Inter-Regular",
+  },
+
+  submitBtn: {
+    marginTop: 20,
+  },
+
+  submitText: {
+    color: "white",
+    backgroundColor: "#1C61C7",
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+  },
+  buttonSubmit: {
+    width: "100%",
+    alignItems: "center",
   },
 });
 

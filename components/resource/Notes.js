@@ -8,8 +8,7 @@ const Notes = ({
   authorName,
   title,
   datePosted,
-  document,
-  documentDetail,
+  resourceUrl
 }) => {
   const navigation = useNavigation();
 
@@ -21,14 +20,13 @@ const Notes = ({
           authorName: authorName,
           title: title,
           datePosted: datePosted,
-          document: document,
-          documentDetail: documentDetail,
+          resourceUrl: resourceUrl,
         })
       }
     >
       <View style={styles.layout}>
         <View style={styles.imageContainer}>
-          <Image style={styles.image} source={document} />
+          <Image style={styles.image} source={{uri: resourceUrl}} />
         </View>
         <View style={styles.desc}>
           <Text style={styles.title}>{title}</Text>
@@ -59,6 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 20,
     paddingTop: 15,
+    marginBottom: 20,
   },
 
   imageContainer: {

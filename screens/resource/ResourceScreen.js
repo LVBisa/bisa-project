@@ -55,7 +55,7 @@ const ResourceScreen = () => {
           onPress={() => navigation.navigate("UploadResource")}
         >
           <Image
-            source={require("../../assets/images/upload-icon.png")}
+            source={require("../../assets/images/resource-upload.png")}
             style={styles.uploadIcon}
           />
         </TouchableOpacity>
@@ -69,13 +69,12 @@ const ResourceScreen = () => {
         {resource.map((resourceData) => {
           return (
             <Notes
-              key={resourceData.resourceId}
+              key={resourceData.authorName}
               authorMajor={resourceData.authorMajor}
               authorName={resourceData.authorName}
               title={resourceData.title}
               datePosted={resourceData.datePosted}
-              document={require("../../assets/images/document.png")}
-              documentDetail={require("../../assets/images/resourceDetail.png")}
+              resourceUrl={resourceData.resourceUrl}
             />
           );
         })}
@@ -88,6 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "white",
   },
   arrow: {
     height: 24,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   uploadIcon: {
-    width: 24,
+    width: 20,
     height: 24,
   },
 });

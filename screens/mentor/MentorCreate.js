@@ -156,7 +156,7 @@ const MentorCreate = () => {
                             <Image source={images.arrow} style={{ height: 24 }} />
                         </View>
                     </TouchableOpacity>
-                    <Text style={styles.navbarText}>Explore your need</Text>
+                    <Text style={styles.navbarText}>Create Mentor</Text>
                 </View>
             </View>
             <ScrollView>

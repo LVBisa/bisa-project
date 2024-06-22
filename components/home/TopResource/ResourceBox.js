@@ -6,8 +6,7 @@ const ResourceBox = ({
   authorName,
   title,
   datePosted,
-  document,
-  documentDetail,
+  resourceUrl
 }) => {
   const navigation = useNavigation();
   return (
@@ -19,13 +18,12 @@ const ResourceBox = ({
           authorName: authorName,
           title: title,
           datePosted: datePosted,
-          document: document,
-          documentDetail: documentDetail,
+          resourceUrl: resourceUrl,
         })
       }
     >
       <View style={styles.layout}>
-        <Image style={styles.image} source={document} />
+        <Image style={styles.image} source={{uri: resourceUrl}} />
       </View>
       <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>

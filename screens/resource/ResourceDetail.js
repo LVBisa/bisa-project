@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Modal,
+  ScrollView,
+  Linking
 } from "react-native";
 import BackArrow from "../../components/UI/BackArrow";
 
@@ -15,23 +17,23 @@ export default function App({ route }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const {
-    document,
     authorMajor,
     authorName,
     title,
     datePosted,
-    documentDetail,
+    resourceUrl,
   } = route.params;
 
   const handleBookmarkPress = () => {
     setIsBookmarked(!isBookmarked);
   };
 
-  const handleDownloadPress = () => {
-    setModalVisible(true);
-    setTimeout(() => {
-      setModalVisible(false);
-    }, 2000);
+  const handleDownloadPress = async () => {
+    await Linking.openURL(resourceUrl);
+    // setModalVisible(true);
+    // setTimeout(() => {
+    //   setModalVisible(false);
+    // }, 2000);
   };
 
   return (
@@ -62,7 +64,7 @@ export default function App({ route }) {
         </View>
       </View>
 
-      <View style={styles.body}>
+      <ScrollView style={styles.body}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.details}>By : {authorName}</Text>
         <Text style={styles.details}>Uploaded at : {datePosted}</Text>
@@ -74,7 +76,7 @@ export default function App({ route }) {
           <Text style={styles.downloadText}>Download</Text>
         </TouchableOpacity>
         <Image
-          source={documentDetail} // Use require for local images
+          source={{uri: resourceUrl}} // Use require for local images
           style={styles.fullImage}
         />
         {/* <TouchableOpacity onPress={handleBookmarkPress}>
@@ -84,7 +86,7 @@ export default function App({ route }) {
             color={isBookmarked ? "blue" : "black"}
           />
         </TouchableOpacity> */}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -93,6 +95,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: "white",
   },
   navbar: {
     paddingTop: 40,

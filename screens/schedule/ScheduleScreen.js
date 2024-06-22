@@ -5,6 +5,7 @@ const ScheduleScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Schedule</Text>
+      <Text style={styles.text}>On Development</Text>
     </View>
   );
 };

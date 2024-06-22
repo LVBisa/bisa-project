@@ -5,6 +5,7 @@ const NotificationsScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Notifications</Text>
+      <Text style={styles.text}>On Development</Text>
     </View>
   );
 };
