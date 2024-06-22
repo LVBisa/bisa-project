@@ -36,7 +36,7 @@ const CourseCard = ({
       <View style={styles.list}>
         <View style={styles.listDescription}>
           <View style={{ marginRight: 10 }}>
-            <Image source={poster} />
+            <Image source={{ uri: poster }} style={{ width: 100, height: 100 }} />
           </View>
           <View>
             <View style={{ alignItems: "flex-start" }}>
@@ -58,7 +58,11 @@ const CourseCard = ({
                 <Text style={styles.listCourse}>{endDate}</Text>
               </View>
               <View>
-                <Text style={styles.listPrice}>{price}</Text>
+                {
+                  price === "Free" || price === "" || price === "0" || price === "free" ?
+                    <Text style={styles.listPrice}>Free</Text> :
+                  <Text style={styles.listPrice}>Rp. {price}</Text>
+                }
               </View>
             </View>
           </View>

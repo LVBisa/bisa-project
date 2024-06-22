@@ -7,7 +7,7 @@ import DiscussionSelections from "../../components/forum/DiscussionSelections";
 
 const ForumScreen = () => {
   return (
-    <ScrollView showsVerticalScrollIndicator={true}>
+    <ScrollView showsVerticalScrollIndicator={true} style={{height: "100%", backgroundColor: "white"}}>
       <View style={styles.arrow}></View>
       <View style={styles.container}>
         <View style={styles.header_container}>

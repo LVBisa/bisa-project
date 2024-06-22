@@ -47,13 +47,12 @@ const TopResource = () => {
         {resource.map((resourceData) => {
           return (
             <ResourceBox
-              key={resourceData.resourceId}
+              key={resourceData.authorName}
               authorMajor={resourceData.authorMajor}
               authorName={resourceData.authorName}
               title={resourceData.title}
               datePosted={resourceData.datePosted}
-              document={require("../../../assets/images/document.png")}
-              documentDetail={require("../../../assets/images/resourceDetail.png")}
+              resourceUrl={resourceData.resourceUrl}
             />
           );
         })}

@@ -34,11 +34,11 @@ const CourseTab = () => {
           <CourseCard
             key={courseData.courseId}
             authorName={courseData.authorName}
-            poster={require("../../assets/images/course-sample.png")}
+            poster={courseData.poster}
             title={courseData.title}
             endDate={courseData.endDate}
             courseDescription={courseData.courseDescription}
-            price={"Rp. " + courseData.price}
+            price={courseData.price}
             subtitle={courseData.subtitle}
           />
         );
