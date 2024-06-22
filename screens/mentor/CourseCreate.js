@@ -19,28 +19,34 @@ const CourseCreate = () => {
 
     const [courseTitle, setCourseTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
+    const [poster, setPoster] = useState("");
     const [endDate, setEndDate] = useState("dd/mm/yyyy");
     const [authorName, setAuthorName] = useState("");
     const [courseDescription, setCourseDescription] = useState("");
+    const [price, setPrice] = useState("");
 
     const handleConfirm = (event, selectedDate) => {
       const currentDate = new Date(selectedDate).toLocaleDateString('en-US');
       setEndDate(currentDate);      
     }
 
-    async function handleModal() {
-      console.log(courseTitle, subTitle, endDate, authorName, courseDescription)
+    const onSuccessUpload = (url) => {
+      setPoster(url);
+    }
 
-      // const docRef = await addDoc(collection(database, "Course"), {
-      //   courseTitle: courseTitle,
-      //   subTitle: subTitle,
-      //   endDate: endDate,
-      //   authorName: authorName,
-      //   courseDescription: courseDescription,
-      // });
+    async function onSubmit() {
+      const docRef = await addDoc(collection(database, "Course"), {
+        title: courseTitle,
+        subTitle: subTitle,
+        endDate: endDate,
+        poster: poster,
+        authorName: authorName,
+        courseDescription: courseDescription,
+        price: price
+      });
 
 
-      // setModalVisible(!modalVisible);
+      setModalVisible(!modalVisible);
     }
 
     const isDisabled = courseTitle === "" || subTitle === "" || endDate === "dd/mm/yyyy" || authorName === "" || courseDescription === "";
@@ -68,7 +74,7 @@ const CourseCreate = () => {
               onChangeText={(text) => setSubTitle(text)}
             />
           </View>
-          <CreateCoursePoster />
+          <CreateCoursePoster onChange={onSuccessUpload} />
           <CreateCourseCalendar 
               inputText="End Date"
               inputDesc={endDate}
@@ -87,7 +93,12 @@ const CourseCreate = () => {
             inputDesc="Write the caption of this course"
             onChangeText={(text) => setCourseDescription(text)}
           />
-          <SendRequestButton onChange={handleModal} isDisabled={isDisabled} />
+          <CreateCourseTextBox
+              inputText="Price"
+              inputDesc="Price of the course"
+              onChangeText={(text) => setPrice(text)}
+            />
+          <SendRequestButton onChange={onSubmit} isDisabled={isDisabled} />
         </ScrollView>
       </View>
     );

@@ -29,7 +29,7 @@ const CourseBox = ({
     >
       <Image
         style={styles.image}
-        source={require("../../../assets/images/course-sample.png")}
+        source={{uri: poster}}
       />
       <Text style={styles.title}>{title}</Text>
       <View style={{ flexDirection: "row" }}>
@@ -39,7 +39,10 @@ const CourseBox = ({
         />
         <Text style={styles.author}>{authorName}</Text>
       </View>
-      <Text style={styles.price}>Rp. {price}</Text>
+      { price === "Free" || price === "" || price === "0" || price === "free" ?
+          <Text style={styles.price}>Free</Text> :
+        <Text style={styles.price}>Rp. {price}</Text>
+        }
     </TouchableOpacity>
   );
 };

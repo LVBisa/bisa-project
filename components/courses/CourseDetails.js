@@ -37,7 +37,7 @@ const CourseDetails = ({
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <Image
           style={{ marginTop: 15, width: 300, height: 435 }}
-          source={poster}
+          source={{uri: poster}}
         />
       </View>
       <Text style={styles.descriptionText}>{courseDescription}</Text>

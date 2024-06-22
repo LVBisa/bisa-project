@@ -53,7 +53,7 @@ const TopCourse = () => {
               endDate={courseData.endDate}
               price={courseData.price}
               subtitle={courseData.subtitle}
-              poster={require("../../../assets/images/course-sample.png")}
+              poster={courseData.poster}
             />
           );
         })}
